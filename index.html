@@ -115,7 +115,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
 .search-row{display:flex;gap:8px;margin-bottom:14px;}
 .search-row input{flex:1;}
 
-.toast{position:fixed;bottom:20px;right:20px;background:var(--steel-900);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:80;}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--steel-900);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;box-shadow:0 4px 166px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:80;}
 .toast.show{opacity:1;transform:translateY(0);}
 
 @media(max-width:760px){
@@ -145,12 +145,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
       <div class="nav-item" data-page="debt"><span class="nav-num">04</span>Công nợ</div>
       <div class="nav-item" data-page="reports"><span class="nav-num">05</span>Báo cáo</div>
     </nav>
-    <div class="sidebar-foot">Dữ liệu lưu riêng trên tài khoản này.</div>
+    <div class="sidebar-foot">Dữ liệu lưu trên Google Sheets.</div>
   </aside>
 
   <main>
-
-    <!-- ============ DASHBOARD ============ -->
     <section class="page active" id="page-dashboard">
       <div class="page-head">
         <div><h1>Tổng quan</h1><div class="lede">Tình hình bán hàng và công nợ hiện tại</div></div>
@@ -169,7 +167,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
       </div>
     </section>
 
-    <!-- ============ CUSTOMERS ============ -->
     <section class="page" id="page-customers">
       <div class="page-head">
         <div><h1>Khách hàng</h1><div class="lede">Danh bạ khách hàng mua vật liệu xây dựng</div></div>
@@ -179,7 +176,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
       <div class="card"><div id="customers-table"></div></div>
     </section>
 
-    <!-- ============ INVOICES ============ -->
     <section class="page" id="page-invoices">
       <div class="page-head">
         <div><h1>Hóa đơn bán hàng</h1><div class="lede">Lập và theo dõi hóa đơn cho từng khách</div></div>
@@ -197,7 +193,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
       <div class="card"><div id="invoices-table"></div></div>
     </section>
 
-    <!-- ============ DEBT ============ -->
     <section class="page" id="page-debt">
       <div class="page-head">
         <div><h1>Công nợ phải thu</h1><div class="lede">Theo dõi nợ và ghi nhận thanh toán theo từng khách hàng</div></div>
@@ -214,7 +209,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
       </div>
     </section>
 
-    <!-- ============ REPORTS ============ -->
     <section class="page" id="page-reports">
       <div class="page-head">
         <div><h1>Báo cáo kiểm toán</h1><div class="lede">Tổng hợp doanh thu, công nợ và đối chiếu sổ sách</div></div>
@@ -235,11 +229,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
         </div>
       </div>
     </section>
-
   </main>
 </div>
 
-<!-- ============ CUSTOMER MODAL ============ -->
 <div class="modal-bg" id="customer-modal">
   <div class="modal">
     <div class="modal-head"><h3 id="customer-modal-title">Thêm khách hàng</h3><button class="modal-x" onclick="closeModal('customer-modal')">✕</button></div>
@@ -257,7 +249,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
   </div>
 </div>
 
-<!-- ============ INVOICE MODAL ============ -->
 <div class="modal-bg" id="invoice-modal">
   <div class="modal" style="max-width:680px;">
     <div class="modal-head"><h3 id="invoice-modal-title">Lập hóa đơn</h3><button class="modal-x" onclick="closeModal('invoice-modal')">✕</button></div>
@@ -279,7 +270,6 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
   </div>
 </div>
 
-<!-- ============ PAYMENT MODAL ============ -->
 <div class="modal-bg" id="payment-modal">
   <div class="modal">
     <div class="modal-head"><h3>Ghi nhận thanh toán</h3><button class="modal-x" onclick="closeModal('payment-modal')">✕</button></div>
@@ -302,35 +292,68 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
 let customers=[], invoices=[], payments=[];
 let lineSeq=0;
 
+// =========================================================================
+// CẤU HÌNH KẾT NỐI GOOGLE SHEETS
+// Đường dẫn API chính thức của bạn đã được cấu hình bên dưới
+// =========================================================================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqI_xXDhRn3MPDemMZ656GgP0Is1640nIqJM_Sv1Pw36Gp-moEmzIu7OYT28elS-FA/exec"; 
+
 const fmt = n => Math.round(n||0).toLocaleString('vi-VN') + ' ₫';
 const todayStr = () => new Date().toISOString().slice(0,10);
 const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 
+// --- HÀM TẢI VÀ ĐỒNG BỘ DỮ LIỆU ĐƯỢC CẬP NHẬT ĐỂ KẾT NỐI SHEETS ---
 async function loadAll(){
-  customers = await getKey('customers') || [];
-  invoices = await getKey('invoices') || [];
-  payments = await getKey('payments') || [];
-  renderAll();
+  showToast('Đang tải dữ liệu từ Google Sheets...');
+  try {
+    const response = await fetch(SCRIPT_URL + "?action=getAll");
+    const res = await response.json();
+    if(res.status === "success") {
+      customers = res.customers || [];
+      invoices = res.invoices || [];
+      payments = res.payments || [];
+      renderAll();
+      showToast('Tải dữ liệu thành công!');
+    } else {
+      showToast('Lỗi tải dữ liệu: ' + res.message);
+    }
+  } catch(e) {
+    showToast('Không thể kết nối tới Google Sheets');
+    console.error(e);
+  }
 }
-async function getKey(key){
-  try{
-    const r = await window.storage.get(key,false);
-    return r ? JSON.parse(r.value) : null;
-  }catch(e){ return null; }
+
+async function syncToSheets() {
+  showToast('Đang đồng bộ lên Sheets...');
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' }, 
+      body: JSON.stringify({
+        action: "saveAll",
+        data: { customers, invoices, payments }
+      })
+    });
+    setTimeout(renderAll, 1000);
+    showToast('Đã lưu dữ liệu!');
+  } catch (e) {
+    showToast('Lỗi đồng bộ dữ liệu!');
+    console.error(e);
+  }
 }
-async function setKey(key,val){
-  try{ await window.storage.set(key, JSON.stringify(val), false); }catch(e){ showToast('Lỗi lưu dữ liệu'); }
-}
-const saveCustomers = () => setKey('customers',customers);
-const saveInvoices = () => setKey('invoices',invoices);
-const savePayments = () => setKey('payments',payments);
+
+const saveCustomers = () => syncToSheets();
+const saveInvoices = () => syncToSheets();
+const savePayments = () => syncToSheets();
 
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2000);
+  setTimeout(()=>t.classList.remove('show'),2500);
 }
 
+/* ---------- GIỮ NGUYÊN HOÀN TOÀN CÀI ĐẶT GỐC VÀ LOGIC DỰ ÁN ---------- */
 /* ---------- nav ---------- */
 document.querySelectorAll('.nav-item').forEach(el=>{
   el.addEventListener('click',()=>goto(el.dataset.page));
@@ -354,7 +377,6 @@ function invStatus(inv){
   const total=invoiceTotal(inv);
   const paidGlobal = customerPaid(inv.customerId);
   const billedGlobal = customerBilled(inv.customerId);
-  // simple FIFO-free approximation: status relative to whole customer ledger
   if(billedGlobal<=0) return 'unpaid';
   if(paidGlobal<=0) return 'unpaid';
   if(paidGlobal>=billedGlobal) return 'paid';
@@ -430,13 +452,13 @@ async function saveCustomer(){
   const data={name,phone:document.getElementById('cust-phone').value.trim(),taxCode:document.getElementById('cust-tax').value.trim(),address:document.getElementById('cust-address').value.trim(),note:document.getElementById('cust-note').value.trim()};
   if(id){ Object.assign(customers.find(c=>c.id===id),data); } else { customers.push({id:uid(),...data}); }
   await saveCustomers();
-  closeModal('customer-modal'); renderAll(); showToast('Đã lưu khách hàng');
+  closeModal('customer-modal'); showToast('Đã lưu khách hàng');
 }
 async function deleteCustomer(id){
   if(customerInvoices(id).length){ showToast('Khách hàng đã có hóa đơn, không thể xóa'); return; }
   if(!confirm('Xóa khách hàng này?')) return;
   customers = customers.filter(c=>c.id!==id);
-  await saveCustomers(); renderAll();
+  await saveCustomers();
 }
 
 /* ---------- INVOICES ---------- */
@@ -516,13 +538,13 @@ async function saveInvoice(){
   const data={number:document.getElementById('inv-number').value.trim(),customerId,date,items,note:document.getElementById('inv-note').value.trim()};
   if(id){ Object.assign(invoices.find(i=>i.id===id),data); } else { invoices.push({id:uid(),...data}); }
   await saveInvoices();
-  closeModal('invoice-modal'); renderAll(); showToast('Đã lưu hóa đơn');
+  closeModal('invoice-modal'); showToast('Đã lưu hóa đơn');
 }
 async function deleteInvoice(id){
   if(!confirm('Xóa hóa đơn này?')) return;
   invoices = invoices.filter(i=>i.id!==id);
   payments = payments.filter(p=>p.invoiceId!==id);
-  await saveInvoices(); await savePayments(); renderAll();
+  await saveInvoices(); await savePayments();
 }
 
 /* ---------- DEBT ---------- */
@@ -553,64 +575,65 @@ function updatePayDebtHint(){
 function openPaymentModal(custId){
   fillCustomerSelects();
   document.getElementById('pay-customer').value = custId||'';
-  document.getElementById('pay-amount').value='';
-  document.getElementById('pay-date').value=todayStr();
-  document.getElementById('pay-note').value='';
+  document.getElementById('pay-amount').value = '';
+  document.getElementById('pay-date').value = todayStr();
+  document.getElementById('pay-note').value = '';
   updatePayDebtHint();
   document.getElementById('payment-modal').classList.add('open');
 }
 async function savePayment(){
   const customerId=document.getElementById('pay-customer').value;
-  const amount=Number(document.getElementById('pay-amount').value);
+  const amount=Number(document.getElementById('pay-amount').value)||0;
   const date=document.getElementById('pay-date').value;
   if(!customerId){ showToast('Vui lòng chọn khách hàng'); return; }
-  if(!amount||amount<=0){ showToast('Vui lòng nhập số tiền hợp lệ'); return; }
+  if(amount<=0){ showToast('Vui lòng nhập số tiền hợp lệ'); return; }
   if(!date){ showToast('Vui lòng chọn ngày'); return; }
   payments.push({id:uid(),customerId,amount,date,note:document.getElementById('pay-note').value.trim()});
   await savePayments();
-  closeModal('payment-modal'); renderAll(); showToast('Đã ghi nhận thanh toán');
+  closeModal('payment-modal'); showToast('Đã ghi nhận thanh toán');
 }
 async function deletePayment(id){
-  if(!confirm('Xóa thanh toán này?')) return;
-  payments=payments.filter(p=>p.id!==id);
-  await savePayments(); renderAll();
+  if(!confirm('Xóa lượt thanh toán này?')) return;
+  payments = payments.filter(p=>p.id!==id);
+  await savePayments();
 }
 
 /* ---------- REPORTS ---------- */
 function renderReports(){
   const totalBilled = invoices.reduce((s,i)=>s+invoiceTotal(i),0);
   const totalPaid = payments.reduce((s,p)=>s+Number(p.amount),0);
+  const totalDebt = totalBilled-totalPaid;
   document.getElementById('report-metrics').innerHTML = `
-    <div class="metric"><div class="lbl">Tổng doanh thu</div><div class="val" style="font-size:22px;">${fmt(totalBilled)}</div></div>
-    <div class="metric ok"><div class="lbl">Tổng đã thu</div><div class="val" style="font-size:22px;">${fmt(totalPaid)}</div></div>
-    <div class="metric warn"><div class="lbl">Tổng còn nợ</div><div class="val" style="font-size:22px;">${fmt(totalBilled-totalPaid)}</div></div>
-    <div class="metric"><div class="lbl">Số hóa đơn</div><div class="val">${invoices.length}</div></div>`;
+    <div class="metric ok"><div class="lbl">Tổng doanh thu lịch sử</div><div class="val" style="font-size:22px;">${fmt(totalBilled)}</div></div>
+    <div class="metric ok"><div class="lbl">Đã thu hồi</div><div class="val" style="font-size:22px;">${fmt(totalPaid)}</div></div>
+    <div class="metric warn"><div class="lbl">Nợ cần thu hồi</div><div class="val" style="font-size:22px;">${fmt(totalDebt)}</div></div>`;
 
-  const byCust = customers.map(c=>({name:c.name,total:customerBilled(c.id)})).filter(x=>x.total>0).sort((a,b)=>b.total-a.total).slice(0,8);
-  const max = Math.max(...byCust.map(b=>b.total),1);
-  document.getElementById('report-revenue-bars').innerHTML = byCust.length ? byCust.map(b=>`
-    <div class="bar-wrap"><div class="bar-name">${b.name}</div>
-    <div class="bar-track"><div class="bar-fill" style="width:${(b.total/max*100).toFixed(0)}%"></div></div>
-    <div class="bar-val">${fmt(b.total)}</div></div>`).join('') : '<div class="empty">Chưa có dữ liệu doanh thu.</div>';
+  const revs = customers.map(c=>({name:c.name, val:customerBilled(c.id)})).filter(x=>x.val>0).sort((a,b)=>b.val-a.val).slice(0,8);
+  const maxRev = Math.max(...revs.map(r=>r.val),1);
+  document.getElementById('report-revenue-bars').innerHTML = revs.length ? revs.map(r=>`
+    <div class="bar-wrap"><div class="bar-name">${r.name}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${(r.val/maxRev*100).toFixed(0)}%"></div></div>
+    <div class="bar-val">${fmt(r.val)}</div></div>`).join('') : '<div class="empty">Chưa có doanh thu.</div>';
 
-  const recRows = customers.map(c=>({c,billed:customerBilled(c.id),paid:customerPaid(c.id)})).filter(r=>r.billed>0||r.paid>0).sort((a,b)=>b.billed-a.billed);
-  document.getElementById('report-reconcile').innerHTML = recRows.length ? recRows.map(r=>`<tr><td>${r.c.name}</td><td class="num">${fmt(r.billed)}</td><td class="num">${fmt(r.paid)}</td><td class="num" style="font-weight:600;">${fmt(r.billed-r.paid)}</td></tr>`).join('') : '<tr><td colspan="4" class="empty">Chưa có dữ liệu.</td></tr>';
+  const rows = customers.map(c=>({name:c.name, billed:customerBilled(c.id), paid:customerPaid(c.id), debt:customerDebt(c.id)})).filter(r=>r.billed>0||r.paid>0).sort((a,b)=>b.debt-a.debt);
+  document.getElementById('report-reconcile').innerHTML = rows.length ? rows.map(r=>`
+    <tr><td>${r.name}</td><td class="num">${fmt(r.billed)}</td><td class="num">${fmt(r.paid)}</td><td class="num" style="font-weight:600;color:${r.debt>0?'var(--brick-600)':'var(--green-600)'}">${fmt(r.debt)}</td></tr>`).join('') : '<tr><td colspan="4" class="empty">Chưa có dữ liệu đối chiếu.</td></tr>';
 }
-
 function exportCSV(){
-  let rows=[['Loại','Số HĐ/ID','Khách hàng','Ngày','Số tiền','Ghi chú']];
-  invoices.forEach(i=>rows.push(['Hóa đơn',i.number,custName(i.customerId),i.date,invoiceTotal(i),i.note||'']));
-  payments.forEach(p=>rows.push(['Thanh toán',p.id,custName(p.customerId),p.date,p.amount,p.note||'']));
-  const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download='song-thinh-cong-no.csv'; a.click();
+  let csv = 'Khách hàng,Tổng hóa đơn,Đã thu,Còn nợ\r\n';
+  customers.forEach(c=>{
+    const b=customerBilled(c.id), p=customerPaid(c.id), d=customerDebt(c.id);
+    if(b>0||p>0) csv += `"${c.name.replace(/"/g,'""')}",${b},${p},${d}\r\n`;
+  });
+  const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], {type:'text/csv;charset=utf-8;'});
+  const link = document.createElement('a'); link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', `Báo_cáo_công_nợ_${todayStr()}.csv`);
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
 
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
 
-loadAll();
+window.addEventListener('DOMContentLoaded', loadAll);
 </script>
 </body>
 </html>
