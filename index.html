@@ -640,6 +640,58 @@ function exportCSV(){
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 
 window.addEventListener('DOMContentLoaded', loadAll);
+<script>
+// 1. Chặn click chuột phải nhằm ngăn mở menu "Kiểm tra" (Inspect)
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+  showToast('Chức năng này đã bị vô hiệu hóa để bảo mật!');
+});
+
+// 2. Chặn các tổ hợp phím tắt mở Developer Tools và xem mã nguồn
+document.addEventListener('keydown', function(e) {
+  // Chặn F12
+  if (e.key === 'F12') {
+    e.preventDefault();
+    showToast('Hành động bị cấm!');
+    return false;
+  }
+  
+  // Chặn Ctrl+Shift+I (Mở Inspect)
+  if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+    e.preventDefault();
+    showToast('Hành động bị cấm!');
+    return false;
+  }
+  
+  // Chặn Ctrl+Shift+J (Mở Console)
+  if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+    e.preventDefault();
+    showToast('Hành động bị cấm!');
+    return false;
+  }
+  
+  // Chặn Ctrl+U (Xem nguồn trang - View Source)
+  if (e.ctrlKey && e.key === 'u') {
+    e.preventDefault();
+    showToast('Hành động bị cấm!');
+    return false;
+  }
+  
+  // Chặn Ctrl+S (Lưu trang web về máy)
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault();
+    showToast('Hành động bị cấm!');
+    return false;
+  }
+});
+
+// 3. Cơ chế tự động "đóng băng" (Anti-debugging) nếu hacker cố tình mở DevTools bằng cách khác
+(function() {
+  setInterval(function() {
+    // Nếu Developer Tools mở, hàm debugger này sẽ liên tục làm treo tiến trình kiểm tra của hacker
+    debugger;
+  }, 100);
+})();
 </script>
 </body>
 </html>
