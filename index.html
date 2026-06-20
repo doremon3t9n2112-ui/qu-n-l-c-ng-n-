@@ -293,20 +293,21 @@ let customers=[], invoices=[], payments=[];
 let lineSeq=0;
 
 // =========================================================================
-// CẤU HÌNH KẾT NỐI GOOGLE SHEETS
-// Đường dẫn API chính thức của bạn đã được cấu hình bên dưới
+// CẤU HÌNH KẾT NỐI GOOGLE SHEETS & BẢO MẬT CHỐNG HACK
 // =========================================================================
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqI_xXDhRn3MPDemMZ656GgP0Is1640nIqJM_Sv1Pw36Gp-moEmzIu7OYT28elS-FA/exec"; 
+const SECRET_TOKEN = "MatKhauBaoMatCuaRiengBan123"; // Khớp với token trong file Mã.gs
 
 const fmt = n => Math.round(n||0).toLocaleString('vi-VN') + ' ₫';
 const todayStr = () => new Date().toISOString().slice(0,10);
 const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 
-// --- HÀM TẢI VÀ ĐỒNG BỘ DỮ LIỆU ĐƯỢC CẬP NHẬT ĐỂ KẾT NỐI SHEETS ---
+// --- HÀM TẢI VÀ ĐỒNG BỘ DỮ LIỆU ĐƯỢC TÍCH HỢP TOKEN XÁC THỰC ---
 async function loadAll(){
   showToast('Đang tải dữ liệu từ Google Sheets...');
   try {
-    const response = await fetch(SCRIPT_URL + "?action=getAll");
+    // Truyền thêm token vào URL khi gửi yêu cầu lấy dữ liệu (GET)
+    const response = await fetch(`${SCRIPT_URL}?action=getAll&token=${encodeURIComponent(SECRET_TOKEN)}`);
     const res = await response.json();
     if(res.status === "success") {
       customers = res.customers || [];
@@ -315,10 +316,10 @@ async function loadAll(){
       renderAll();
       showToast('Tải dữ liệu thành công!');
     } else {
-      showToast('Lỗi tải dữ liệu: ' + res.message);
+      showToast('Lỗi bảo mật: ' + res.message);
     }
   } catch(e) {
-    showToast('Không thể kết nối tới Google Sheets');
+    showToast('Không thể kết nối hoặc Token sai.');
     console.error(e);
   }
 }
@@ -326,11 +327,13 @@ async function loadAll(){
 async function syncToSheets() {
   showToast('Đang đồng bộ lên Sheets...');
   try {
+    // Đóng gói dữ liệu kèm Token xác thực gửi lên bằng POST
     await fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain' }, 
       body: JSON.stringify({
+        token: SECRET_TOKEN,
         action: "saveAll",
         data: { customers, invoices, payments }
       })
@@ -353,8 +356,7 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-/* ---------- GIỮ NGUYÊN HOÀN TOÀN CÀI ĐẶT GỐC VÀ LOGIC DỰ ÁN ---------- */
-/* ---------- nav ---------- */
+/* ---------- LOGIC VÀ HIỂN THỊ HỆ THỐNG GỐC ---------- */
 document.querySelectorAll('.nav-item').forEach(el=>{
   el.addEventListener('click',()=>goto(el.dataset.page));
 });
@@ -364,7 +366,6 @@ function goto(page){
   renderAll();
 }
 
-/* ---------- derived data ---------- */
 function invoiceTotal(inv){ return (inv.items||[]).reduce((s,i)=>s+(i.qty*i.price),0); }
 function paidForInvoice(inv){
   return payments.filter(p=>p.invoiceId===inv.id).reduce((s,p)=>s+Number(p.amount),0);
@@ -374,7 +375,6 @@ function customerBilled(custId){ return customerInvoices(custId).reduce((s,i)=>s
 function customerPaid(custId){ return payments.filter(p=>p.customerId===custId).reduce((s,p)=>s+Number(p.amount),0); }
 function customerDebt(custId){ return customerBilled(custId)-customerPaid(custId); }
 function invStatus(inv){
-  const total=invoiceTotal(inv);
   const paidGlobal = customerPaid(inv.customerId);
   const billedGlobal = customerBilled(inv.customerId);
   if(billedGlobal<=0) return 'unpaid';
@@ -384,13 +384,11 @@ function invStatus(inv){
 }
 function custName(id){ const c=customers.find(c=>c.id===id); return c?c.name:'(đã xóa)'; }
 
-/* ---------- render dispatcher ---------- */
 function renderAll(){
   renderDashboard(); renderCustomers(); renderInvoices(); renderDebt(); renderReports();
   fillCustomerSelects();
 }
 
-/* ---------- DASHBOARD ---------- */
 function renderDashboard(){
   const totalBilled = invoices.reduce((s,i)=>s+invoiceTotal(i),0);
   const totalPaid = payments.reduce((s,p)=>s+Number(p.amount),0);
@@ -415,12 +413,11 @@ function renderDashboard(){
   }</tbody></table>` : '<div class="empty">Chưa có hóa đơn nào. Bấm "Lập hóa đơn" để bắt đầu.</div>';
 }
 
-/* ---------- CUSTOMERS ---------- */
 function renderCustomers(){
   const q=(document.getElementById('cust-search')?.value||'').toLowerCase();
   const list = customers.filter(c=>!q || [c.name,c.phone,c.taxCode,c.address].join(' ').toLowerCase().includes(q));
   const el=document.getElementById('customers-table');
-  if(!list.length){ el.innerHTML='<div class="empty">Không có khách hàng nào. Bấm "+ Thêm khách hàng" để bắt đầu.</div>'; return; }
+  if(!list.length){ el.innerHTML='<div class="empty">Không có khách hàng nào.</div>'; return; }
   el.innerHTML = `<table><thead><tr><th>Tên khách hàng</th><th>SĐT</th><th>Mã số thuế</th><th>Địa chỉ</th><th class="num">Công nợ</th><th></th></tr></thead><tbody>
   ${list.map(c=>{
     const debt=customerDebt(c.id);
@@ -434,6 +431,7 @@ function renderCustomers(){
     </tr>`;
   }).join('')}</tbody></table>`;
 }
+
 function openCustomerModal(id){
   document.getElementById('customer-modal-title').textContent = id? 'Sửa khách hàng':'Thêm khách hàng';
   document.getElementById('cust-id').value = id||'';
@@ -445,6 +443,7 @@ function openCustomerModal(id){
   document.getElementById('cust-note').value = c?c.note:'';
   document.getElementById('customer-modal').classList.add('open');
 }
+
 async function saveCustomer(){
   const name=document.getElementById('cust-name').value.trim();
   if(!name){ showToast('Vui lòng nhập tên khách hàng'); return; }
@@ -454,6 +453,7 @@ async function saveCustomer(){
   await saveCustomers();
   closeModal('customer-modal'); showToast('Đã lưu khách hàng');
 }
+
 async function deleteCustomer(id){
   if(customerInvoices(id).length){ showToast('Khách hàng đã có hóa đơn, không thể xóa'); return; }
   if(!confirm('Xóa khách hàng này?')) return;
@@ -461,7 +461,6 @@ async function deleteCustomer(id){
   await saveCustomers();
 }
 
-/* ---------- INVOICES ---------- */
 function fillCustomerSelects(){
   const opts = '<option value="">— Chọn khách hàng —</option>' + customers.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   ['inv-customer','pay-customer'].forEach(id=>{
@@ -469,6 +468,7 @@ function fillCustomerSelects(){
     sel.innerHTML=opts; if(cur) sel.value=cur;
   });
 }
+
 function renderInvoices(){
   const q=(document.getElementById('inv-search')?.value||'').toLowerCase();
   const f=document.getElementById('inv-filter')?.value||'';
@@ -485,11 +485,10 @@ function renderInvoices(){
     <td style="white-space:nowrap;"><button class="btn ghost sm" onclick="openInvoiceModal('${i.id}')">Sửa</button> <button class="btn danger sm" onclick="deleteInvoice('${i.id}')">Xóa</button></td></tr>`;
   }).join('')}</tbody></table>`;
 }
+
 function addLine(item){
-  lineSeq++;
-  const id='l'+lineSeq;
-  const div=document.createElement('div');
-  div.className='line-row'; div.id=id;
+  lineSeq++; const id='l'+lineSeq;
+  const div=document.createElement('div'); div.className='line-row'; div.id=id;
   div.innerHTML = `
     <input placeholder="VD: Xi măng Hà Tiên" class="li-name" value="${item?item.name:''}">
     <input placeholder="bao" class="li-unit" value="${item?item.unit:''}">
@@ -499,6 +498,7 @@ function addLine(item){
   document.getElementById('inv-lines').appendChild(div);
   updateInvoiceTotal();
 }
+
 function updateInvoiceTotal(){
   let total=0;
   document.querySelectorAll('#inv-lines .line-row').forEach(r=>{
@@ -508,6 +508,7 @@ function updateInvoiceTotal(){
   });
   document.getElementById('inv-total-display').textContent = fmt(total);
 }
+
 function openInvoiceModal(id){
   document.getElementById('invoice-modal-title').textContent = id? 'Sửa hóa đơn':'Lập hóa đơn';
   document.getElementById('inv-id').value = id||'';
@@ -522,6 +523,7 @@ function openInvoiceModal(id){
   updateInvoiceTotal();
   document.getElementById('invoice-modal').classList.add('open');
 }
+
 async function saveInvoice(){
   const customerId=document.getElementById('inv-customer').value;
   const date=document.getElementById('inv-date').value;
@@ -540,6 +542,7 @@ async function saveInvoice(){
   await saveInvoices();
   closeModal('invoice-modal'); showToast('Đã lưu hóa đơn');
 }
+
 async function deleteInvoice(id){
   if(!confirm('Xóa hóa đơn này?')) return;
   invoices = invoices.filter(i=>i.id!==id);
@@ -547,7 +550,6 @@ async function deleteInvoice(id){
   await saveInvoices(); await savePayments();
 }
 
-/* ---------- DEBT ---------- */
 function renderDebt(){
   const totalDebt = customers.reduce((s,c)=>s+Math.max(customerDebt(c.id),0),0);
   const overCount = customers.filter(c=>customerDebt(c.id)>0).length;
@@ -566,12 +568,14 @@ function renderDebt(){
   ${plist.map(p=>`<tr><td>${p.date}</td><td>${custName(p.customerId)}</td><td class="num">${fmt(p.amount)}</td><td class="muted">${p.note||'—'}</td><td><button class="btn danger sm" onclick="deletePayment('${p.id}')">Xóa</button></td></tr>`).join('')}
   </tbody></table>` : '<div class="empty">Chưa có thanh toán nào.</div>';
 }
+
 function updatePayDebtHint(){
   const id=document.getElementById('pay-customer').value;
   const hint=document.getElementById('pay-debt-hint');
   if(!id){ hint.textContent=''; return; }
   hint.textContent = 'Công nợ hiện tại: ' + fmt(customerDebt(id));
 }
+
 function openPaymentModal(custId){
   fillCustomerSelects();
   document.getElementById('pay-customer').value = custId||'';
@@ -581,6 +585,7 @@ function openPaymentModal(custId){
   updatePayDebtHint();
   document.getElementById('payment-modal').classList.add('open');
 }
+
 async function savePayment(){
   const customerId=document.getElementById('pay-customer').value;
   const amount=Number(document.getElementById('pay-amount').value)||0;
@@ -592,13 +597,13 @@ async function savePayment(){
   await savePayments();
   closeModal('payment-modal'); showToast('Đã ghi nhận thanh toán');
 }
+
 async function deletePayment(id){
   if(!confirm('Xóa lượt thanh toán này?')) return;
   payments = payments.filter(p=>p.id!==id);
   await savePayments();
 }
 
-/* ---------- REPORTS ---------- */
 function renderReports(){
   const totalBilled = invoices.reduce((s,i)=>s+invoiceTotal(i),0);
   const totalPaid = payments.reduce((s,p)=>s+Number(p.amount),0);
@@ -619,6 +624,7 @@ function renderReports(){
   document.getElementById('report-reconcile').innerHTML = rows.length ? rows.map(r=>`
     <tr><td>${r.name}</td><td class="num">${fmt(r.billed)}</td><td class="num">${fmt(r.paid)}</td><td class="num" style="font-weight:600;color:${r.debt>0?'var(--brick-600)':'var(--green-600)'}">${fmt(r.debt)}</td></tr>`).join('') : '<tr><td colspan="4" class="empty">Chưa có dữ liệu đối chiếu.</td></tr>';
 }
+
 function exportCSV(){
   let csv = 'Khách hàng,Tổng hóa đơn,Đã thu,Còn nợ\r\n';
   customers.forEach(c=>{
