@@ -304,7 +304,7 @@ const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 
 // --- HÀM TẢI VÀ ĐỒNG BỘ DỮ LIỆU ĐƯỢC CẬP NHẬT ĐỂ KẾT NỐI MÁY CHỦ ---
 async function loadAll(){
-  showToast('Đang tải dữ liệu từ MÁY CHỦ...');
+  showToast('Đang tải dữ liệu từ Máy Chủ...');
   try {
     const response = await fetch(SCRIPT_URL + "?action=getAll");
     const res = await response.json();
@@ -318,7 +318,7 @@ async function loadAll(){
       showToast('Lỗi tải dữ liệu: ' + res.message);
     }
   } catch(e) {
-    showToast('Không thể kết nối tới MÁY CHỦ');
+    showToast('Không thể kết nối tới Máy Chủ');
     console.error(e);
   }
 }
