@@ -23,8 +23,6 @@
 *{box-sizing:border-box;}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
 .app{display:flex;min-height:100vh;}
-
-/* ---------- sidebar ---------- */
 .sidebar{width:220px;flex:0 0 220px;background:var(--steel-900);color:var(--steel-100);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;}
 .brand{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
 .brand-mark{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;letter-spacing:.5px;color:#fff;line-height:1;}
@@ -36,15 +34,12 @@ nav{padding:14px 10px;flex:1;}
 .nav-item.active{background:var(--steel-700);color:#fff;border-color:rgba(255,255,255,.08);}
 .nav-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--brick-300);width:16px;}
 .sidebar-foot{padding:14px 20px;font-size:11px;color:var(--steel-300);border-top:1px solid rgba(255,255,255,.08);}
-
-/* ---------- main ---------- */
 main{flex:1;padding:32px 40px;max-width:1180px;}
 .page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;gap:16px;flex-wrap:wrap;}
 h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;margin:0;letter-spacing:.2px;}
 .lede{color:var(--ink-soft);font-size:14px;margin-top:4px;}
 .page{display:none;}
 .page.active{display:block;}
-
 button{font-family:inherit;cursor:pointer;}
 .btn{background:var(--steel-900);color:#fff;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;}
 .btn:hover{background:var(--steel-700);}
@@ -55,16 +50,12 @@ button{font-family:inherit;cursor:pointer;}
 .btn.sm{padding:5px 10px;font-size:12px;border-radius:6px;}
 .btn.danger{background:transparent;color:var(--red-600);border:1px solid var(--red-100);}
 .btn.danger:hover{background:var(--red-100);}
-
-/* ---------- metric cards ---------- */
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px;}
 .metric{background:var(--paper);border:1px solid var(--steel-100);border-radius:var(--rad);padding:16px 18px;box-shadow:var(--shadow);}
 .metric .lbl{font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.6px;font-weight:600;}
 .metric .val{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:700;margin-top:6px;line-height:1;}
 .metric.warn .val{color:var(--brick-600);}
 .metric.ok .val{color:var(--green-600);}
-
-/* ---------- cards / tables ---------- */
 .card{background:var(--paper);border:1px solid var(--steel-100);border-radius:var(--rad);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;}
 .card-head{padding:14px 18px;border-bottom:1px solid var(--steel-100);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
 .card-head h3{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:600;margin:0;}
@@ -77,13 +68,10 @@ tr:hover td{background:rgba(62,98,115,.03);}
 .num{font-family:'JetBrains Mono',monospace;text-align:right;white-space:nowrap;}
 .muted{color:var(--ink-faint);}
 .empty{padding:34px 18px;text-align:center;color:var(--ink-faint);font-size:13.5px;}
-
 .badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;}
 .badge.paid{background:var(--green-100);color:var(--green-600);}
 .badge.partial{background:var(--amber-100);color:var(--amber-600);}
 .badge.unpaid{background:var(--red-100);color:var(--red-600);}
-
-/* ---------- forms ---------- */
 label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;}
 input,select,textarea{width:100%;font-family:inherit;font-size:13.5px;padding:8px 10px;border:1px solid var(--steel-300);border-radius:7px;background:#fff;color:var(--ink);}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outline-offset:1px;border-color:var(--steel-500);}
@@ -98,26 +86,21 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
 .modal-x{background:none;border:none;font-size:20px;color:var(--ink-faint);line-height:1;}
 .modal-body{padding:18px 20px;max-height:70vh;overflow:auto;}
 .modal-foot{padding:14px 20px;border-top:1px solid var(--steel-100);display:flex;justify-content:flex-end;gap:8px;}
-
 .line-row{display:grid;grid-template-columns:1fr 70px 100px 110px 28px;gap:8px;margin-bottom:8px;align-items:center;}
 .line-row input{padding:7px 9px;}
-.line-head{display:grid;grid-template-columns:1fr 70px 100px 110px 28px;gap:8px;font-size:11px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;margin-bottom:6px;}
+.line-row.head{display:grid;grid-template-columns:1fr 70px 100px 110px 28px;gap:8px;font-size:11px;color:var(--ink-faint);text-transform:uppercase;font-weight:600;margin-bottom:6px;}
 .remove-line{background:none;border:none;color:var(--red-600);font-size:16px;}
 .total-row{display:flex;justify-content:flex-end;gap:14px;align-items:baseline;margin-top:10px;padding-top:10px;border-top:1px dashed var(--steel-300);}
 .total-row .v{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;}
-
 .bar-wrap{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .bar-name{width:140px;font-size:12.5px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .bar-track{flex:1;height:10px;background:var(--steel-100);border-radius:5px;overflow:hidden;}
 .bar-fill{height:100%;background:var(--brick-500);border-radius:5px;}
 .bar-val{width:110px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;flex-shrink:0;}
-
 .search-row{display:flex;gap:8px;margin-bottom:14px;}
 .search-row input{flex:1;}
-
 .toast{position:fixed;bottom:20px;right:20px;background:var(--steel-900);color:#fff;padding:10px 16px;border-radius:8px;font-size:13px;box-shadow:0 4px 166px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:80;}
 .toast.show{opacity:1;transform:translateY(0);}
-
 @media(max-width:760px){
   .app{flex-direction:column;}
   .sidebar{width:100%;flex:none;height:auto;position:relative;}
@@ -125,7 +108,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
   .nav-item{flex-shrink:0;}
   main{padding:20px;}
   .grid2,.grid3{grid-template-columns:1fr;}
-  .line-row,.line-head{grid-template-columns:1fr 50px 70px 80px 24px;}
+  .line-row,.line-row.head{grid-template-columns:1fr 50px 70px 80px 24px;}
 }
 </style>
 </head>
@@ -133,10 +116,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
 
 <div class="app">
   <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-mark">SONG THỊNH</div>
-      <div class="brand-sub">Vật liệu xây dựng</div>
-    </div>
+    <div class="brand"><div class="brand-mark">SONG THỊNH</div><div class="brand-sub">Vật liệu xây dựng</div></div>
     <div class="stripe"></div>
     <nav>
       <div class="nav-item active" data-page="dashboard"><span class="nav-num">01</span>Tổng quan</div>
@@ -145,7 +125,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
       <div class="nav-item" data-page="debt"><span class="nav-num">04</span>Công nợ</div>
       <div class="nav-item" data-page="reports"><span class="nav-num">05</span>Báo cáo</div>
     </nav>
-    <div class="sidebar-foot">Dữ liệu lưu trên Google Sheets.</div>
+    <div class="sidebar-foot">Hệ thống đồng bộ trực tiếp.</div>
   </aside>
 
   <main>
@@ -155,14 +135,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
         <button class="btn brick" onclick="openInvoiceModal()">+ Lập hóa đơn</button>
       </div>
       <div class="metrics" id="dash-metrics"></div>
-
       <div class="card">
         <div class="card-head"><h3>Khách hàng nợ nhiều nhất</h3></div>
         <div class="card-body" id="dash-top-debt"></div>
       </div>
-
       <div class="card">
-        <div class="card-head"><h3>Hóa đơn gần đây</h3><span class="muted" style="font-size:12px;cursor:pointer;color:var(--steel-500);" onclick="goto('invoices')">Xem tất cả →</span></div>
+        <div class="card-head"><h3>Hóa đơn gần đây</h3><span class="muted" style="font-size:12px;cursor:pointer;" onclick="goto('invoices')">Xem tất cả →</span></div>
         <div id="dash-recent-invoices"></div>
       </div>
     </section>
@@ -172,7 +150,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
         <div><h1>Khách hàng</h1><div class="lede">Danh bạ khách hàng mua vật liệu xây dựng</div></div>
         <button class="btn brick" onclick="openCustomerModal()">+ Thêm khách hàng</button>
       </div>
-      <div class="search-row"><input id="cust-search" placeholder="Tìm theo tên, SĐT, mã số thuế…" oninput="renderCustomers()"></div>
+      <div class="search-row"><input id="cust-search" placeholder="Tìm theo tên, SĐT..." oninput="renderCustomers()"></div>
       <div class="card"><div id="customers-table"></div></div>
     </section>
 
@@ -182,7 +160,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
         <button class="btn brick" onclick="openInvoiceModal()">+ Lập hóa đơn</button>
       </div>
       <div class="search-row">
-        <input id="inv-search" placeholder="Tìm theo số hóa đơn hoặc khách hàng…" oninput="renderInvoices()">
+        <input id="inv-search" placeholder="Tìm kiếm hóa đơn..." oninput="renderInvoices()">
         <select id="inv-filter" style="max-width:170px" onchange="renderInvoices()">
           <option value="">Tất cả trạng thái</option>
           <option value="unpaid">Chưa thanh toán</option>
@@ -195,18 +173,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
 
     <section class="page" id="page-debt">
       <div class="page-head">
-        <div><h1>Công nợ phải thu</h1><div class="lede">Theo dõi nợ và ghi nhận thanh toán theo từng khách hàng</div></div>
+        <div><h1>Công nợ phải thu</h1><div class="lede">Theo dõi nợ và ghi nhận thanh toán</div></div>
         <button class="btn brick" onclick="openPaymentModal()">+ Ghi nhận thanh toán</button>
       </div>
       <div class="metrics" id="debt-metrics"></div>
-      <div class="card">
-        <div class="card-head"><h3>Công nợ theo khách hàng</h3></div>
-        <div id="debt-table"></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h3>Lịch sử thanh toán</h3></div>
-        <div id="payments-table"></div>
-      </div>
+      <div class="card"><div class="card-head"><h3>Công nợ theo khách hàng</h3></div><div id="debt-table"></div></div>
+      <div class="card"><div class="card-head"><h3>Lịch sử thanh toán</h3></div><div id="payments-table"></div></div>
     </section>
 
     <section class="page" id="page-reports">
@@ -215,10 +187,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
         <button class="btn ghost" onclick="exportCSV()">⬇ Xuất CSV</button>
       </div>
       <div class="metrics" id="report-metrics"></div>
-      <div class="card">
-        <div class="card-head"><h3>Doanh thu theo khách hàng (top 8)</h3></div>
-        <div class="card-body" id="report-revenue-bars"></div>
-      </div>
+      <div class="card"><div class="card-head"><h3>Doanh thu theo khách hàng (top 8)</h3></div><div class="card-body" id="report-revenue-bars"></div></div>
       <div class="card">
         <div class="card-head"><h3>Đối chiếu công nợ</h3></div>
         <div class="card-body">
@@ -237,12 +206,12 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
     <div class="modal-head"><h3 id="customer-modal-title">Thêm khách hàng</h3><button class="modal-x" onclick="closeModal('customer-modal')">✕</button></div>
     <div class="modal-body">
       <input type="hidden" id="cust-id">
-      <div class="field"><label>Tên khách hàng / công ty *</label><input id="cust-name" placeholder="VD: Công ty TNHH Xây dựng An Phát"></div>
+      <div class="field"><label>Tên khách hàng / công ty *</label><input id="cust-name"></div>
       <div class="grid2">
-        <div class="field"><label>Số điện thoại</label><input id="cust-phone" placeholder="09xxxxxxxx"></div>
-        <div class="field"><label>Mã số thuế</label><input id="cust-tax" placeholder="0123456789"></div>
+        <div class="field"><label>Số điện thoại</label><input id="cust-phone"></div>
+        <div class="field"><label>Mã số thuế</label><input id="cust-tax"></div>
       </div>
-      <div class="field"><label>Địa chỉ</label><input id="cust-address" placeholder="Số nhà, đường, phường/xã, quận/huyện"></div>
+      <div class="field"><label>Địa chỉ</label><input id="cust-address"></div>
       <div class="field"><label>Ghi chú</label><textarea id="cust-note" rows="2"></textarea></div>
     </div>
     <div class="modal-foot"><button class="btn ghost" onclick="closeModal('customer-modal')">Hủy</button><button class="btn brick" onclick="saveCustomer()">Lưu</button></div>
@@ -260,7 +229,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
         <div class="field"><label>Ngày *</label><input type="date" id="inv-date"></div>
       </div>
       <label style="margin-top:6px;">Mặt hàng</label>
-      <div class="line-head"><span>Tên hàng</span><span>ĐVT</span><span>SL</span><span>Đơn giá</span><span></span></div>
+      <div class="line-row head"><span>Tên hàng</span><span>ĐVT</span><span>SL</span><span>Đơn giá</span><span></span></div>
       <div id="inv-lines"></div>
       <button class="btn ghost sm" onclick="addLine()">+ Thêm dòng</button>
       <div class="total-row"><span class="muted">Tổng tiền</span><span class="v" id="inv-total-display">0 ₫</span></div>
@@ -292,41 +261,36 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--steel-500);outli
 let customers=[], invoices=[], payments=[];
 let lineSeq=0;
 
-// =========================================================================
-// CẤU HÌNH KẾT NỐI GOOGLE SHEETS
-// Hãy thay thế chuỗi dưới đây bằng URL Web App Apps Script thu được ở Bước 1
-// =========================================================================
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx75Y1r9ROzYneIpLBPOtJy7yIcgbfv6JrdrtvZY9LuFBrWvVhyQ0R6cTfjNkVlOzc-/exec"; 
+// QUAN TRỌNG: URL Web App của bạn đã được chèn chính xác bên dưới
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwuE36a30LjmsBFIDcBHtrLf5KiUGeO_im2lYjzMvyXXrfwkevuSZh5x6lcOSlel_uH/exec"; 
 
 const fmt = n => Math.round(n||0).toLocaleString('vi-VN') + ' ₫';
 const todayStr = () => new Date().toISOString().slice(0,10);
 const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 
-// --- HÀM TẢI VÀ ĐỒNG BỘ DỮ LIỆU ĐƯỢC CẬP NHẬT ĐỂ KẾT NỐI SHEETS ---
 async function loadAll(){
-  showToast('Đang tải dữ liệu từ Google Sheets...');
+  showToast('Đang kết nối tới Google Sheets...');
   try {
-    const response = await fetch(SCRIPT_URL + "?action=getAll");
+    const response = await fetch(`${SCRIPT_URL}?action=getAll`);
     const res = await response.json();
     if(res.status === "success") {
       customers = res.customers || [];
       invoices = res.invoices || [];
       payments = res.payments || [];
       renderAll();
-      showToast('Tải dữ liệu thành công!');
+      showToast('Đã tải xong toàn bộ dữ liệu!');
     } else {
-      showToast('Lỗi tải dữ liệu: ' + res.message);
+      showToast('Lỗi từ hệ thống: ' + res.message);
     }
   } catch(e) {
-    showToast('Không thể kết nối tới Google Sheets');
+    showToast('Lỗi kết nối. Vui lòng kiểm tra lại cấu hình Web App.');
     console.error(e);
   }
 }
 
 async function syncToSheets() {
-  showToast('Đang đồng bộ lên Sheets...');
+  showToast('Đang gửi dữ liệu đồng bộ...');
   try {
-    // Chuyển sang gửi định dạng text thường để tránh lỗi bảo mật CORS preflight khi gửi dữ liệu mảng lồng nhau
     await fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
@@ -336,9 +300,10 @@ async function syncToSheets() {
         data: { customers, invoices, payments }
       })
     });
-    // Trì hoãn 1 giây rồi chạy re-render dữ liệu để đảm bảo mượt mà dữ liệu
-    setTimeout(renderAll, 1000);
-    showToast('Đã lưu dữ liệu!');
+    setTimeout(() => {
+      renderAll();
+      showToast('Dữ liệu đã được lưu thành công!');
+    }, 1200);
   } catch (e) {
     showToast('Lỗi đồng bộ dữ liệu!');
     console.error(e);
@@ -355,8 +320,6 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-/* ---------- GIỮ NGUYÊN HOÀN TOÀN CÀI ĐẶT GỐC VÀ LOGIC DỰ ÁN ---------- */
-/* ---------- nav ---------- */
 document.querySelectorAll('.nav-item').forEach(el=>{
   el.addEventListener('click',()=>goto(el.dataset.page));
 });
@@ -366,17 +329,12 @@ function goto(page){
   renderAll();
 }
 
-/* ---------- derived data ---------- */
 function invoiceTotal(inv){ return (inv.items||[]).reduce((s,i)=>s+(i.qty*i.price),0); }
-function paidForInvoice(inv){
-  return payments.filter(p=>p.invoiceId===inv.id).reduce((s,p)=>s+Number(p.amount),0);
-}
 function customerInvoices(custId){ return invoices.filter(i=>i.customerId===custId); }
 function customerBilled(custId){ return customerInvoices(custId).reduce((s,i)=>s+invoiceTotal(i),0); }
 function customerPaid(custId){ return payments.filter(p=>p.customerId===custId).reduce((s,p)=>s+Number(p.amount),0); }
 function customerDebt(custId){ return customerBilled(custId)-customerPaid(custId); }
 function invStatus(inv){
-  const total=invoiceTotal(inv);
   const paidGlobal = customerPaid(inv.customerId);
   const billedGlobal = customerBilled(inv.customerId);
   if(billedGlobal<=0) return 'unpaid';
@@ -386,13 +344,11 @@ function invStatus(inv){
 }
 function custName(id){ const c=customers.find(c=>c.id===id); return c?c.name:'(đã xóa)'; }
 
-/* ---------- render dispatcher ---------- */
 function renderAll(){
   renderDashboard(); renderCustomers(); renderInvoices(); renderDebt(); renderReports();
   fillCustomerSelects();
 }
 
-/* ---------- DASHBOARD ---------- */
 function renderDashboard(){
   const totalBilled = invoices.reduce((s,i)=>s+invoiceTotal(i),0);
   const totalPaid = payments.reduce((s,p)=>s+Number(p.amount),0);
@@ -414,15 +370,14 @@ function renderDashboard(){
   const recent = [...invoices].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6);
   document.getElementById('dash-recent-invoices').innerHTML = recent.length ? `<table><thead><tr><th>Số HĐ</th><th>Khách hàng</th><th>Ngày</th><th class="num">Thành tiền</th></tr></thead><tbody>${
     recent.map(i=>`<tr><td>${i.number||'—'}</td><td>${custName(i.customerId)}</td><td>${i.date}</td><td class="num">${fmt(invoiceTotal(i))}</td></tr>`).join('')
-  }</tbody></table>` : '<div class="empty">Chưa có hóa đơn nào. Bấm "Lập hóa đơn" để bắt đầu.</div>';
+  }</tbody></table>` : '<div class="empty">Chưa có dữ liệu hóa đơn nào.</div>';
 }
 
-/* ---------- CUSTOMERS ---------- */
 function renderCustomers(){
   const q=(document.getElementById('cust-search')?.value||'').toLowerCase();
   const list = customers.filter(c=>!q || [c.name,c.phone,c.taxCode,c.address].join(' ').toLowerCase().includes(q));
   const el=document.getElementById('customers-table');
-  if(!list.length){ el.innerHTML='<div class="empty">Không có khách hàng nào. Bấm "+ Thêm khách hàng" để bắt đầu.</div>'; return; }
+  if(!list.length){ el.innerHTML='<div class="empty">Không tìm thấy khách hàng nào.</div>'; return; }
   el.innerHTML = `<table><thead><tr><th>Tên khách hàng</th><th>SĐT</th><th>Mã số thuế</th><th>Địa chỉ</th><th class="num">Công nợ</th><th></th></tr></thead><tbody>
   ${list.map(c=>{
     const debt=customerDebt(c.id);
@@ -436,6 +391,7 @@ function renderCustomers(){
     </tr>`;
   }).join('')}</tbody></table>`;
 }
+
 function openCustomerModal(id){
   document.getElementById('customer-modal-title').textContent = id? 'Sửa khách hàng':'Thêm khách hàng';
   document.getElementById('cust-id').value = id||'';
@@ -447,6 +403,7 @@ function openCustomerModal(id){
   document.getElementById('cust-note').value = c?c.note:'';
   document.getElementById('customer-modal').classList.add('open');
 }
+
 async function saveCustomer(){
   const name=document.getElementById('cust-name').value.trim();
   if(!name){ showToast('Vui lòng nhập tên khách hàng'); return; }
@@ -454,16 +411,16 @@ async function saveCustomer(){
   const data={name,phone:document.getElementById('cust-phone').value.trim(),taxCode:document.getElementById('cust-tax').value.trim(),address:document.getElementById('cust-address').value.trim(),note:document.getElementById('cust-note').value.trim()};
   if(id){ Object.assign(customers.find(c=>c.id===id),data); } else { customers.push({id:uid(),...data}); }
   await saveCustomers();
-  closeModal('customer-modal'); showToast('Đã lưu khách hàng');
+  closeModal('customer-modal');
 }
+
 async function deleteCustomer(id){
-  if(customerInvoices(id).length){ showToast('Khách hàng đã có hóa đơn, không thể xóa'); return; }
+  if(customerInvoices(id).length){ showToast('Khách hàng đã có giao dịch, không thể xóa'); return; }
   if(!confirm('Xóa khách hàng này?')) return;
   customers = customers.filter(c=>c.id!==id);
   await saveCustomers();
 }
 
-/* ---------- INVOICES ---------- */
 function fillCustomerSelects(){
   const opts = '<option value="">— Chọn khách hàng —</option>' + customers.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
   ['inv-customer','pay-customer'].forEach(id=>{
@@ -471,6 +428,7 @@ function fillCustomerSelects(){
     sel.innerHTML=opts; if(cur) sel.value=cur;
   });
 }
+
 function renderInvoices(){
   const q=(document.getElementById('inv-search')?.value||'').toLowerCase();
   const f=document.getElementById('inv-filter')?.value||'';
@@ -487,20 +445,20 @@ function renderInvoices(){
     <td style="white-space:nowrap;"><button class="btn ghost sm" onclick="openInvoiceModal('${i.id}')">Sửa</button> <button class="btn danger sm" onclick="deleteInvoice('${i.id}')">Xóa</button></td></tr>`;
   }).join('')}</tbody></table>`;
 }
+
 function addLine(item){
-  lineSeq++;
-  const id='l'+lineSeq;
-  const div=document.createElement('div');
-  div.className='line-row'; div.id=id;
+  lineSeq++; const id='l'+lineSeq;
+  const div=document.createElement('div'); div.className='line-row'; div.id=id;
   div.innerHTML = `
-    <input placeholder="VD: Xi măng Hà Tiên" class="li-name" value="${item?item.name:''}">
-    <input placeholder="bao" class="li-unit" value="${item?item.unit:''}">
+    <input placeholder="Tên vật tư" class="li-name" value="${item?item.name:''}">
+    <input placeholder="ĐVT" class="li-unit" value="${item?item.unit:''}">
     <input type="number" placeholder="0" class="li-qty" value="${item?item.qty:1}" oninput="updateInvoiceTotal()">
     <input type="number" placeholder="0" class="li-price" value="${item?item.price:''}" oninput="updateInvoiceTotal()">
     <button class="remove-line" onclick="document.getElementById('${id}').remove(); updateInvoiceTotal();">✕</button>`;
   document.getElementById('inv-lines').appendChild(div);
   updateInvoiceTotal();
 }
+
 function updateInvoiceTotal(){
   let total=0;
   document.querySelectorAll('#inv-lines .line-row').forEach(r=>{
@@ -510,6 +468,7 @@ function updateInvoiceTotal(){
   });
   document.getElementById('inv-total-display').textContent = fmt(total);
 }
+
 function openInvoiceModal(id){
   document.getElementById('invoice-modal-title').textContent = id? 'Sửa hóa đơn':'Lập hóa đơn';
   document.getElementById('inv-id').value = id||'';
@@ -524,6 +483,7 @@ function openInvoiceModal(id){
   updateInvoiceTotal();
   document.getElementById('invoice-modal').classList.add('open');
 }
+
 async function saveInvoice(){
   const customerId=document.getElementById('inv-customer').value;
   const date=document.getElementById('inv-date').value;
@@ -540,16 +500,15 @@ async function saveInvoice(){
   const data={number:document.getElementById('inv-number').value.trim(),customerId,date,items,note:document.getElementById('inv-note').value.trim()};
   if(id){ Object.assign(invoices.find(i=>i.id===id),data); } else { invoices.push({id:uid(),...data}); }
   await saveInvoices();
-  closeModal('invoice-modal'); showToast('Đã lưu hóa đơn');
+  closeModal('invoice-modal');
 }
+
 async function deleteInvoice(id){
   if(!confirm('Xóa hóa đơn này?')) return;
   invoices = invoices.filter(i=>i.id!==id);
-  payments = payments.filter(p=>p.invoiceId!==id);
-  await saveInvoices(); await savePayments();
+  await saveInvoices();
 }
 
-/* ---------- DEBT ---------- */
 function renderDebt(){
   const totalDebt = customers.reduce((s,c)=>s+Math.max(customerDebt(c.id),0),0);
   const overCount = customers.filter(c=>customerDebt(c.id)>0).length;
@@ -568,12 +527,14 @@ function renderDebt(){
   ${plist.map(p=>`<tr><td>${p.date}</td><td>${custName(p.customerId)}</td><td class="num">${fmt(p.amount)}</td><td class="muted">${p.note||'—'}</td><td><button class="btn danger sm" onclick="deletePayment('${p.id}')">Xóa</button></td></tr>`).join('')}
   </tbody></table>` : '<div class="empty">Chưa có thanh toán nào.</div>';
 }
+
 function updatePayDebtHint(){
   const id=document.getElementById('pay-customer').value;
   const hint=document.getElementById('pay-debt-hint');
   if(!id){ hint.textContent=''; return; }
   hint.textContent = 'Công nợ hiện tại: ' + fmt(customerDebt(id));
 }
+
 function openPaymentModal(custId){
   fillCustomerSelects();
   document.getElementById('pay-customer').value = custId||'';
@@ -583,30 +544,31 @@ function openPaymentModal(custId){
   updatePayDebtHint();
   document.getElementById('payment-modal').classList.add('open');
 }
+
 async function savePayment(){
   const customerId=document.getElementById('pay-customer').value;
   const amount=Number(document.getElementById('pay-amount').value)||0;
   const date=document.getElementById('pay-date').value;
   if(!customerId){ showToast('Vui lòng chọn khách hàng'); return; }
-  if(amount<=0){ showToast('Vui lòng nhập số tiền hợp lệ'); return; }
+  if(amount<=0){ showToast('Vui lòng nhập số tiền'); return; }
   if(!date){ showToast('Vui lòng chọn ngày'); return; }
   payments.push({id:uid(),customerId,amount,date,note:document.getElementById('pay-note').value.trim()});
   await savePayments();
-  closeModal('payment-modal'); showToast('Đã ghi nhận thanh toán');
+  closeModal('payment-modal');
 }
+
 async function deletePayment(id){
   if(!confirm('Xóa lượt thanh toán này?')) return;
   payments = payments.filter(p=>p.id!==id);
   await savePayments();
 }
 
-/* ---------- REPORTS ---------- */
 function renderReports(){
   const totalBilled = invoices.reduce((s,i)=>s+invoiceTotal(i),0);
   const totalPaid = payments.reduce((s,p)=>s+Number(p.amount),0);
   const totalDebt = totalBilled-totalPaid;
   document.getElementById('report-metrics').innerHTML = `
-    <div class="metric ok"><div class="lbl">Tổng doanh thu lịch sử</div><div class="val" style="font-size:22px;">${fmt(totalBilled)}</div></div>
+    <div class="metric ok"><div class="lbl">Tổng doanh thu</div><div class="val" style="font-size:22px;">${fmt(totalBilled)}</div></div>
     <div class="metric ok"><div class="lbl">Đã thu hồi</div><div class="val" style="font-size:22px;">${fmt(totalPaid)}</div></div>
     <div class="metric warn"><div class="lbl">Nợ cần thu hồi</div><div class="val" style="font-size:22px;">${fmt(totalDebt)}</div></div>`;
 
@@ -621,6 +583,7 @@ function renderReports(){
   document.getElementById('report-reconcile').innerHTML = rows.length ? rows.map(r=>`
     <tr><td>${r.name}</td><td class="num">${fmt(r.billed)}</td><td class="num">${fmt(r.paid)}</td><td class="num" style="font-weight:600;color:${r.debt>0?'var(--brick-600)':'var(--green-600)'}">${fmt(r.debt)}</td></tr>`).join('') : '<tr><td colspan="4" class="empty">Chưa có dữ liệu đối chiếu.</td></tr>';
 }
+
 function exportCSV(){
   let csv = 'Khách hàng,Tổng hóa đơn,Đã thu,Còn nợ\r\n';
   customers.forEach(c=>{
@@ -629,12 +592,11 @@ function exportCSV(){
   });
   const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], {type:'text/csv;charset=utf-8;'});
   const link = document.createElement('a'); link.href = URL.createObjectURL(blob);
-  link.setAttribute('download', `Báo_cáo_công_nợ_${todayStr()}.csv`);
+  link.setAttribute('download', `Bao_cao_cong_no_${todayStr()}.csv`);
   document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
 
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-
 window.addEventListener('DOMContentLoaded', loadAll);
 </script>
 </body>
