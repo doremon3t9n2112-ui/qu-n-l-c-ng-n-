@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Song Thịnh · Công nợ &amp; Hóa đơn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+          barlow: ['Barlow Condensed', 'sans-serif'],
+          mono: ['JetBrains Mono', 'monospace'],
+        },
+        colors: {
+          steel: {
+            50: '#EEF2F3', 100: '#D7DFE2', 300: '#9FB1B8', 500: '#3E6273', 700: '#2A4856', 900: '#16282F',
+          },
+          brick: {
+            50: '#FBEAE2', 100: '#F2C8B3', 300: '#E48F5E', 500: '#C85A2C', 600: '#A8451F', 700: '#7A3015',
+          }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  /* Một vài class tùy chỉnh hỗ trợ cấu trúc bảng và thanh cuộn mượt mà */
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #9FB1B8; border-radius: 4px; }
+  th, td { vertical-align: middle; }
+</style>
+</head>
+<body class="bg-[#E6E4DD] text-[#23262A] font-sans antialiased">
+
+<div class="flex flex-col md:flex-row min-height-screen">
+  <aside class="w-full md:w-[220px] md:flex-shrink-0 bg-steel-900 text-steel-100 flex flex-col md:sticky md:top-0 md:h-screen">
+    <div class="p-[22px_20px_16px] border-b border-white/10">
+      <div class="font-barlow font-bold text-2xl tracking-[0.5px] text-white leading-none">SONG THỊNH</div>
+      <div class="text-[11px] tracking-[1.5px] uppercase text-brick-300 mt-1 font-semibold">Vật liệu xây dựng</div>
+    </div>
+    <div class="h-1.5" style="background: repeating-linear-gradient(45deg, #C85A2C 0 8px, #A8451F 8px 16px);"></div>
+    
+    <nav class="p-2.5 md:p-3.5 flex flex-row md:flex-col gap-1 overflow-x-auto custom-scrollbar flex-1">
+      <div class="nav-item active flex items-center gap-2.5 p-2.5 px-3 rounded-lg text-white bg-steel-700 border border-white/10 text-sm font-medium cursor-pointer whitespace-nowrap" data-page="dashboard">
+        <span class="nav-num font-mono text-[11px] text-brick-300 w-4">01</span>Tổng quan
+      </div>
+      <div class="nav-item flex items-center gap-2.5 p-2.5 px-3 rounded-lg text-steel-300 border border-transparent text-sm font-medium cursor-pointer hover:bg-white/5 hover:text-white whitespace-nowrap" data-page="customers">
+        <span class="nav-num font-mono text-[11px] text-brick-300 w-4">02</span>Khách hàng
+      </div>
+      <div class="nav-item flex items-center gap-2.5 p-2.5 px-3 rounded-lg text-steel-300 border border-transparent text-sm font-medium cursor-pointer hover:bg-white/5 hover:text-white whitespace-nowrap" data-page="invoices">
+        <span class="nav-num font-mono text-[11px] text-brick-300 w-4">03</span>Hóa đơn
+      </div>
+      <div class="nav-item flex items-center gap-2.5 p-2.5 px-3 rounded-lg text-steel-300 border border-transparent text-sm font-medium cursor-pointer hover:bg-white/5 hover:text-white whitespace-nowrap" data-page="debt">
+        <span class="nav-num font-mono text-[11px] text-brick-300 w-4">04</span>Công nợ
+      </div>
+      <div class="nav-item flex items-center gap-2.5 p-2.5 px-3 rounded-lg text-steel-300 border border-transparent text-sm font-medium cursor-pointer hover:bg-white/5 hover:text-white whitespace-nowrap" data-page="reports">
+        <span class="nav-num font-mono text-[11px] text-brick-300 w-4">05</span>Báo cáo
+      </div>
+    </nav>
+    <div class="hidden md:block p-3.5 px-5 text-[11px] text-steel-300 border-t border-white/10">Dữ liệu lưu trên Cloud Server.</div>
+  </aside>
+
+  <main class="flex-1 p-5 md:p-8 max-w-[1180px]">
+    
+    <section class="page block" id="page-dashboard">
+      <div class="flex justify-between items-end mb-6 gap-4 flex-wrap">
+        <div>
+          <h1 class="font-barlow font-bold text-3xl tracking-[0.2px] m-0">Tổng quan</h1>
+          <div class="text-[#5B5E59] text-sm mt-1">Tình hình bán hàng và công nợ hiện tại</div>
+        </div>
+        <button class="bg-brick-500 hover:bg-brick-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow-sm transition-colors" onclick="openInvoiceModal()">+ Lập hóa đơn</button>
+      </div>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-7" id="dash-metrics"></div>
+
+      <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl shadow-sm mb-5 overflow-hidden">
+        <div class="p-3.5 px-4.5 border-b border-steel-100 flex justify-between items-center gap-2 flex-wrap">
+          <h3 class="font-barlow text-lg font-semibold m-0">Khách hàng nợ nhiều nhất</h3>
+        </div>
+        <div class="p-4.5" id="dash-top-debt"></div>
+      </div>
+
+      <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl shadow-sm mb-5 overflow-hidden">
+        <div class="p-3.5 px-4.5 border-b border-steel-100 flex justify-between items-center gap-2 flex-wrap">
+          <h3 class="font-barlow text-lg font-semibold m-0">Hóa đơn gần đây</h3>
+          <span class="text-xs font-medium cursor-pointer text-steel-500 hover:text-steel-700 transition-colors" onclick="goto('invoices')">Xem tất cả →</span>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar" id="dash-recent-invoices"></div>
+      </div>
+    </section>
+
+    <section class="page hidden" id="page-customers">
+      <div class="flex justify-between items-end mb-6 gap-4 flex-wrap">
+        <div>
+          <h1 class="font-barlow font-bold text-3xl tracking-[0.2px] m-0">Khách hàng</h1>
+          <div class="text-[#5B5E59] text-sm mt-1">Danh bạ khách hàng mua vật liệu xây dựng</div>
+        </div>
+        <button class="bg-brick-500 hover:bg-brick-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow-sm transition-colors" onclick="openCustomerModal()">+ Thêm khách hàng</button>
+      </div>
+      <div class="flex gap-2 mb-3.5">
+        <input id="cust-search" class="w-full text-[13.5px] p-2 px-2.5 border border-steel-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-steel-500 focus:border-steel-500" placeholder="Tìm theo tên, SĐT, mã số thuế…" oninput="renderCustomers()">
+      </div>
+      <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl shadow-sm mb-5 overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar" id="customers-table"></div>
+      </div>
+    </section>
+
+    <section class="page hidden" id="page-invoices">
+      <div class="flex justify-between items-end mb-6 gap-4 flex-wrap">
+        <div>
+          <h1 class="font-barlow font-bold text-3xl tracking-[0.2px] m-0">Hóa đơn bán hàng</h1>
+          <div class="text-[#5B5E59] text-sm mt-1">Lập và theo dõi hóa đơn cho từng khách</div>
+        </div>
+        <button class="bg-brick-500 hover:bg-brick-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow-sm transition-colors" onclick="openInvoiceModal()">+ Lập hóa đơn</button>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2 mb-3.5">
+        <input id="inv-search" class="w-full text-[13.5px] p-2 px-2.5 border border-steel-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-steel-500 focus:border-steel-500" placeholder="Tìm theo số hóa đơn hoặc khách hàng…" oninput="renderInvoices()">
+        <select id="inv-filter" class="w-full sm:max-w-[170px] text-[13.5px] p-2 px-2.5 border border-steel-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-steel-500 focus:border-steel-500" onchange="renderInvoices()">
+          <option value="">Tất cả trạng thái</option>
+          <option value="unpaid">Chưa thanh toán</option>
+          <option value="partial">Thanh toán 1 phần</option>
+          <option value="paid">Đã thanh toán</option>
+        </select>
+      </div>
+      <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl shadow-sm mb-5 overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar" id="invoices-table"></div>
+      </div>
+    </section>
+
+    <section class="page hidden" id="page-debt">
+      <div class="flex justify-between items-end mb-6 gap-4 flex-wrap">
+        <div>
+          <h1 class="font-barlow font-bold text-3xl tracking-[0.2px] m-0">Công nợ phải thu</h1>
+          <div class="text-[#5B5E59] text-sm mt-1">Theo dõi nợ và ghi nhận thanh toán theo từng khách hàng</div>
+        </div>
+        <button class="bg-brick-500 hover:bg-brick-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow-sm transition-colors" onclick="openPaymentModal()">+ Ghi nhận thanh toán</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-7" id="debt-metrics"></div>
+      
+      <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl shadow-sm mb-5 overflow-hidden">
+        <div class="p-3.5 px-4.5 border-b border-steel-100">
+          <h3 class="font-barlow text-lg font-semibold m-0">Công nợ theo khách hàng</h3>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar" id="debt-table"></div>
+      </div>
+      
+      <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl shadow-sm mb-5 overflow-hidden">
+        <div class="p-3.5 px-4.5 border-b border-steel-100">
+          <h3 class="font-barlow text-lg font-semibold m-0">Lịch sử thanh toán</h3>
+        </div>
+        <div class="overflow-x-auto custom-scrollbar" id="payments-table"></div>
+      </div>
+    </section>
+
+    <section class="page hidden" id="page-reports">
+      <div class="flex justify-between items-end mb-6 gap-4 flex-wrap">
+        <div>
+          <h1 class="font-barlow font-bold text-3xl tracking-[0.2px] m-0">Báo cáo kiểm toán</h1>
+          <div class="text-[#5B5E59] text-sm mt-1">Tổng hợp doanh thu, công nợ và đối chiếu sổ sách</div>
+        </div>
+        <button class="bg-transparent hover:bg-steel-50 text-[#23262A] font-semibold py-2 px-4 border border-steel-300 rounded-lg text-sm shadow-sm transition-colors" onclick="exportCSV()">⬇ Xuất CSV</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-7" id="report-metrics"></div>
+      
+      <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl shadow-sm mb-5 overflow-hidden">
+        <div class="p-3.5 px-4.5 border-b border-steel-100">
+          <h3 class="font-barlow text-lg font-semibold m-0">Doanh thu theo khách hàng (top 8)</h3>
+        </div>
+        <div class="p-4.5" id="report-revenue-bars"></div>
+      </div>
+      
+      <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl shadow-sm mb-5 overflow-hidden">
+        <div class="p-3.5 px-4.5 border-b border-steel-100">
+          <h3 class="font-barlow text-lg font-semibold m-0">Đối chiếu công nợ</h3>
+        </div>
+        <div class="p-0 overflow-x-auto custom-scrollbar">
+          <table class="w-full border-collapse text-[13.5px]">
+            <thead>
+              <tr class="bg-steel-50 border-b border-steel-100 text-left text-xs font-semibold uppercase tracking-wider text-[#5B5E59]">
+                <th class="p-3 px-3.5">Khách hàng</th>
+                <th class="p-3 px-3.5 text-right font-mono">Tổng hóa đơn</th>
+                <th class="p-3 px-3.5 text-right font-mono">Đã thu</th>
+                <th class="p-3 px-3.5 text-right font-mono">Còn nợ</th>
+              </tr>
+            </thead>
+            <tbody id="report-reconcile"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-bg fixed inset-0 bg-steel-900/45 hidden items-start justify-center p-10 px-4 overflow-y-auto z-50 transition-opacity" id="customer-modal">
+  <div class="bg-[#FCFBF8] rounded-xl w-full max-w-[560px] shadow-xl border border-steel-100 m-auto">
+    <div class="p-4 px-5 border-b border-steel-100 flex justify-between items-center">
+      <h3 class="font-barlow text-xl font-bold m-0" id="customer-modal-title">Thêm khách hàng</h3>
+      <button class="bg-none border-none text-2xl text-[#8B8E87] leading-none hover:text-black transition-colors" onclick="closeModal('customer-modal')">✕</button>
+    </div>
+    <div class="p-4.5 px-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
+      <input type="hidden" id="cust-id">
+      <div class="mb-3">
+        <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Tên khách hàng / công ty *</label>
+        <input id="cust-name" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500" placeholder="VD: Công ty TNHH Xây dựng An Phát">
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+        <div>
+          <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Số điện thoại</label>
+          <input id="cust-phone" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500" placeholder="09xxxxxxxx">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Mã số thuế</label>
+          <input id="cust-tax" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500" placeholder="0123456789">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Địa chỉ</label>
+        <input id="cust-address" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500" placeholder="Số nhà, đường, phường/xã, quận/huyện">
+      </div>
+      <div class="mb-3">
+        <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Ghi chú</label>
+        <textarea id="cust-note" rows="2" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500"></textarea>
+      </div>
+    </div>
+    <div class="p-3.5 px-5 border-t border-steel-100 flex justify-end gap-2">
+      <button class="bg-transparent hover:bg-steel-50 text-[#23262A] font-semibold py-2 px-4 border border-steel-300 rounded-lg text-sm shadow-sm transition-colors" onclick="closeModal('customer-modal')">Hủy</button>
+      <button class="bg-brick-500 hover:bg-brick-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow-sm transition-colors" onclick="saveCustomer()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg fixed inset-0 bg-steel-900/45 hidden items-start justify-center p-10 px-4 overflow-y-auto z-50 transition-opacity" id="invoice-modal">
+  <div class="bg-[#FCFBF8] rounded-xl w-full max-w-[680px] shadow-xl border border-steel-100 m-auto">
+    <div class="p-4 px-5 border-b border-steel-100 flex justify-between items-center">
+      <h3 class="font-barlow text-xl font-bold m-0" id="invoice-modal-title">Lập hóa đơn</h3>
+      <button class="bg-none border-none text-2xl text-[#8B8E87] leading-none hover:text-black transition-colors" onclick="closeModal('invoice-modal')">✕</button>
+    </div>
+    <div class="p-4.5 px-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
+      <input type="hidden" id="inv-id">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
+        <div>
+          <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Số hóa đơn</label>
+          <input id="inv-number" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Khách hàng *</label>
+          <select id="inv-customer" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Ngày *</label>
+          <input type="date" id="inv-date" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500">
+        </div>
+      </div>
+      
+      <label class="block text-xs font-semibold text-[#5B5E59] mt-4 mb-1">Mặt hàng</label>
+      <div class="grid grid-cols-[1fr_60px_70px_85px_24px] sm:grid-cols-[1fr_70px_100px_110px_28px] gap-2 text-[11px] text-[#8B8E87] uppercase font-bold mb-1.5 px-1">
+        <span>Tên hàng</span><span>ĐVT</span><span>SL</span><span>Đơn giá</span><span></span>
+      </div>
+      <div id="inv-lines" class="space-y-2 mb-3"></div>
+      
+      <button class="bg-transparent hover:bg-steel-50 text-[#23262A] font-medium p-1.5 px-2.5 border border-steel-300 rounded-md text-xs transition-colors shadow-sm" onclick="addLine()">+ Thêm dòng</button>
+      
+      <div class="flex justify-end gap-3.5 items-baseline mt-2.5 pt-2.5 border-t border-dashed border-steel-300">
+        <span class="text-[#8B8E87] text-sm">Tổng tiền</span>
+        <span class="font-barlow text-2xl font-bold" id="inv-total-display">0 ₫</span>
+      </div>
+      
+      <div class="mb-3 mt-2">
+        <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Ghi chú</label>
+        <textarea id="inv-note" rows="2" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500"></textarea>
+      </div>
+    </div>
+    <div class="p-3.5 px-5 border-t border-steel-100 flex justify-end gap-2">
+      <button class="bg-transparent hover:bg-steel-50 text-[#23262A] font-semibold py-2 px-4 border border-steel-300 rounded-lg text-sm shadow-sm transition-colors" onclick="closeModal('invoice-modal')">Hủy</button>
+      <button class="bg-brick-500 hover:bg-brick-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow-sm transition-colors" onclick="saveInvoice()">Lưu hóa đơn</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg fixed inset-0 bg-steel-900/45 hidden items-start justify-center p-10 px-4 overflow-y-auto z-50 transition-opacity" id="payment-modal">
+  <div class="bg-[#FCFBF8] rounded-xl w-full max-w-[560px] shadow-xl border border-steel-100 m-auto">
+    <div class="p-4 px-5 border-b border-steel-100 flex justify-between items-center">
+      <h3 class="font-barlow text-xl font-bold m-0">Ghi nhận thanh toán</h3>
+      <button class="bg-none border-none text-2xl text-[#8B8E87] leading-none hover:text-black transition-colors" onclick="closeModal('payment-modal')">✕</button>
+    </div>
+    <div class="p-4.5 px-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
+      <div class="mb-3">
+        <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Khách hàng *</label>
+        <select id="pay-customer" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500" onchange="updatePayDebtHint()"></select>
+      </div>
+      <div class="text-[#5B5E59] text-[12.5px] mb-3 font-medium px-0.5" id="pay-debt-hint"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+        <div>
+          <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Số tiền *</label>
+          <input type="number" id="pay-amount" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500" placeholder="0">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Ngày *</label>
+          <input type="date" id="pay-date" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="block text-xs font-semibold text-[#5B5E59] mb-1">Ghi chú</label>
+        <input id="pay-note" class="w-full text-[13.5px] p-2 border border-steel-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-steel-500" placeholder="VD: Tiền mặt, chuyển khoản…">
+      </div>
+    </div>
+    <div class="p-3.5 px-5 border-t border-steel-100 flex justify-end gap-2">
+      <button class="bg-transparent hover:bg-steel-50 text-[#23262A] font-semibold py-2 px-4 border border-steel-300 rounded-lg text-sm shadow-sm transition-colors" onclick="closeModal('payment-modal')">Hủy</button>
+      <button class="bg-brick-500 hover:bg-brick-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow-sm transition-colors" onclick="savePayment()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast fixed bottom-5 right-5 bg-steel-900 text-white p-2.5 px-4 rounded-lg text-sm shadow-lg opacity-0 translate-y-2 pointer-events-none z-[80] transition-all duration-200 ease-out" id="toast"></div>
+
+<script>
+let customers=[], invoices=[], payments=[];
+let lineSeq=0;
+
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwT6eV7z2sw1KOg2Vdt3DTTZoWYnWHhEx58ue-LD14yqRltwulToSUFq0TMwqdbTMiH/exec"; 
+
+const fmt = n => Math.round(n||0).toLocaleString('vi-VN') + ' ₫';
+const todayStr = () => new Date().toISOString().slice(0,10);
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+async function loadAll(){
+  showToast('Đang tải dữ liệu từ Máy Chủ...');
+  try {
+    const response = await fetch(SCRIPT_URL + "?action=getAll");
+    const res = await response.json();
+    if(res.status === "success") {
+      customers = res.customers || [];
+      invoices = res.invoices || [];
+      payments = res.payments || [];
+      renderAll();
+      showToast('Tải dữ liệu thành công!');
+    } else {
+      showToast('Lỗi tải dữ liệu: ' + res.message);
+    }
+  } catch(e) {
+    showToast('Không thể kết nối tới Máy Chủ');
+    console.error(e);
+  }
+}
+
+async function syncToSheets() {
+  showToast('Đang đồng bộ lên Máy Chủ...');
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' }, 
+      body: JSON.stringify({
+        action: "saveAll",
+        data: { customers, invoices, payments }
+      })
+    });
+    setTimeout(renderAll, 1000);
+    showToast('Đã lưu dữ liệu!');
+  } catch (e) {
+    showToast('Lỗi đồng bộ dữ liệu!');
+    console.error(e);
+  }
+}
+
+const saveCustomers = () => syncToSheets();
+const saveInvoices = () => syncToSheets();
+const savePayments = () => syncToSheets();
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; 
+  t.classList.remove('opacity-0', 'translate-y-2');
+  t.classList.add('opacity-100', 'translate-y-0');
+  setTimeout(()=>{
+    t.classList.remove('opacity-100', 'translate-y-0');
+    t.classList.add('opacity-0', 'translate-y-2');
+  },2500);
+}
+
+document.querySelectorAll('.nav-item').forEach(el=>{
+  el.addEventListener('click',()=>goto(el.dataset.page));
+});
+
+function goto(page){
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    const isActive = n.dataset.page === page;
+    n.classList.toggle('active', isActive);
+    if(isActive) {
+      n.classList.add('bg-steel-700', 'text-white', 'border-white/10');
+      n.classList.remove('text-steel-300', 'border-transparent');
+    } else {
+      n.classList.remove('bg-steel-700', 'text-white', 'border-white/10');
+      n.classList.add('text-steel-300', 'border-transparent');
+    }
+  });
+  document.querySelectorAll('.page').forEach(p=>{
+    const isTarget = p.id === 'page-' + page;
+    p.classList.toggle('block', isTarget);
+    p.classList.toggle('hidden', !isTarget);
+  });
+  renderAll();
+}
+
+function invoiceTotal(inv){ return (inv.items||[]).reduce((s,i)=>s+(i.qty*i.price),0); }
+function paidForInvoice(inv){
+  return payments.filter(p=>p.invoiceId===inv.id).reduce((s,p)=>s+Number(p.amount),0);
+}
+function customerInvoices(custId){ return invoices.filter(i=>i.customerId===custId); }
+function customerBilled(custId){ return customerInvoices(custId).reduce((s,i)=>s+invoiceTotal(i),0); }
+function customerPaid(custId){ return payments.filter(p=>p.customerId===custId).reduce((s,p)=>s+Number(p.amount),0); }
+function customerDebt(custId){ return customerBilled(custId)-customerPaid(custId); }
+function invStatus(inv){
+  const total=invoiceTotal(inv);
+  const paidGlobal = customerPaid(inv.customerId);
+  const billedGlobal = customerBilled(inv.customerId);
+  if(billedGlobal<=0) return 'unpaid';
+  if(paidGlobal<=0) return 'unpaid';
+  if(paidGlobal>=billedGlobal) return 'paid';
+  return 'partial';
+}
+function custName(id){ const c=customers.find(c=>c.id===id); return c?c.name:'(đã xóa)'; }
+
+function renderAll(){
+  renderDashboard(); renderCustomers(); renderInvoices(); renderDebt(); renderReports();
+  fillCustomerSelects();
+}
+
+function renderDashboard(){
+  const totalBilled = invoices.reduce((s,i)=>s+invoiceTotal(i),0);
+  const totalPaid = payments.reduce((s,p)=>s+Number(p.amount),0);
+  const totalDebt = totalBilled-totalPaid;
+  const m = document.getElementById('dash-metrics');
+  m.innerHTML = `
+    <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl p-4 px-4.5 shadow-sm">
+      <div class="text-[11px] text-[#5B5E59] uppercase tracking-wider font-semibold">Khách hàng</div>
+      <div class="font-barlow text-3xl font-bold mt-1.5 leading-none">${customers.length}</div>
+    </div>
+    <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl p-4 px-4.5 shadow-sm">
+      <div class="text-[11px] text-[#5B5E59] uppercase tracking-wider font-semibold">Hóa đơn</div>
+      <div class="font-barlow text-3xl font-bold mt-1.5 leading-none">${invoices.length}</div>
+    </div>
+    <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl p-4 px-4.5 shadow-sm">
+      <div class="text-[11px] text-[#5B5E59] uppercase tracking-wider font-semibold">Tổng doanh thu</div>
+      <div class="font-barlow text-2xl font-bold mt-1.5 leading-none text-green-600">${fmt(totalBilled)}</div>
+    </div>
+    <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl p-4 px-4.5 shadow-sm">
+      <div class="text-[11px] text-[#5B5E59] uppercase tracking-wider font-semibold">Công nợ còn lại</div>
+      <div class="font-barlow text-2xl font-bold mt-1.5 leading-none text-brick-600">${fmt(totalDebt)}</div>
+    </div>`;
+
+  const debts = customers.map(c=>({c,debt:customerDebt(c.id)})).filter(x=>x.debt>0).sort((a,b)=>b.debt-a.debt).slice(0,5);
+  const maxDebt = Math.max(...debts.map(d=>d.debt),1);
+  document.getElementById('dash-top-debt').innerHTML = debts.length ? debts.map(d=>`
+    <div class="flex items-center gap-2.5 mb-2.5 last:mb-0">
+      <div class="w-[140px] text-[12.5px] flex-shrink-0 truncate">${d.c.name}</div>
+      <div class="flex-1 h-2.5 bg-steel-100 rounded-full overflow-hidden">
+        <div class="h-full bg-brick-500 rounded-full" style="width:${(d.debt/maxDebt*100).toFixed(0)}%"></div>
+      </div>
+      <div class="w-[110px] text-right font-mono text-xs flex-shrink-0">${fmt(d.debt)}</div>
+    </div>`).join('') : '<div class="p-8 text-center text-[#8B8E87] text-[13.5px]">Chưa có công nợ nào.</div>';
+
+  const recent = [...invoices].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6);
+  document.getElementById('dash-recent-invoices').innerHTML = recent.length ? `
+  <table class="w-full border-collapse text-[13.5px]">
+    <thead>
+      <tr class="bg-steel-50 border-b border-steel-100 text-left text-xs font-semibold uppercase tracking-wider text-[#5B5E59]">
+        <th class="p-2.5 px-3.5">Số HĐ</th><th class="p-2.5 px-3.5">Khách hàng</th><th class="p-2.5 px-3.5">Ngày</th><th class="p-2.5 px-3.5 text-right font-mono">Thành tiền</th>
+      </tr>
+    </thead>
+    <tbody>${
+    recent.map(i=>`<tr class="border-b border-steel-100 last:border-none hover:bg-steel-50/40"><td class="p-2.5 px-3.5">${i.number||'—'}</td><td class="p-2.5 px-3.5">${custName(i.customerId)}</td><td class="p-2.5 px-3.5">${i.date}</td><td class="p-2.5 px-3.5 text-right font-mono">${fmt(invoiceTotal(i))}</td></tr>`).join('')
+  }</tbody></table>` : '<div class="p-8 text-center text-[#8B8E87] text-[13.5px]">Chưa có hóa đơn nào. Bấm "Lập hóa đơn" để bắt đầu.</div>';
+}
+
+function renderCustomers(){
+  const q=(document.getElementById('cust-search')?.value||'').toLowerCase();
+  const list = customers.filter(c=>!q || [c.name,c.phone,c.taxCode,c.address].join(' ').toLowerCase().includes(q));
+  const el=document.getElementById('customers-table');
+  if(!list.length){ el.innerHTML='<div class="p-8 text-center text-[#8B8E87] text-[13.5px]">Không có khách hàng nào. Bấm "+ Thêm khách hàng" để bắt đầu.</div>'; return; }
+  el.innerHTML = `
+  <table class="w-full border-collapse text-[13.5px]">
+    <thead>
+      <tr class="bg-steel-50 border-b border-steel-100 text-left text-xs font-semibold uppercase tracking-wider text-[#5B5E59]">
+        <th class="p-2.5 px-3.5">Tên khách hàng</th><th class="p-2.5 px-3.5">SĐT</th><th class="p-2.5 px-3.5">Mã số thuế</th><th class="p-2.5 px-3.5">Địa chỉ</th><th class="p-2.5 px-3.5 text-right font-mono">Công nợ</th><th class="p-2.5 px-3.5"></th>
+      </tr>
+    </thead>
+    <tbody>
+    ${list.map(c=>{
+      const debt=customerDebt(c.id);
+      return `<tr class="border-b border-steel-100 last:border-none hover:bg-steel-50/40">
+        <td class="p-2.5 px-3.5"><strong>${c.name}</strong></td>
+        <td class="p-2.5 px-3.5">${c.phone||'—'}</td>
+        <td class="p-2.5 px-3.5">${c.taxCode||'—'}</td>
+        <td class="p-2.5 px-3.5 text-[#8B8E87]">${c.address||'—'}</td>
+        <td class="p-2.5 px-3.5 text-right font-mono font-semibold" style="color:${debt>0?'#A8451F':'#3F7D4F'}">${fmt(debt)}</td>
+        <td class="p-2.5 px-3.5 text-right whitespace-nowrap space-x-1">
+          <button class="bg-transparent hover:bg-steel-50 text-[#23262A] font-medium p-1 px-2 border border-steel-300 rounded text-xs transition-colors" onclick="openCustomerModal('${c.id}')">Sửa</button> 
+          <button class="bg-transparent hover:bg-red-100 text-red-600 font-medium p-1 px-2 border border-red-100 rounded text-xs transition-colors" onclick="deleteCustomer('${c.id}')">Xóa</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+function openCustomerModal(id){
+  document.getElementById('customer-modal-title').textContent = id? 'Sửa khách hàng':'Thêm khách hàng';
+  document.getElementById('cust-id').value = id||'';
+  const c = id ? customers.find(c=>c.id===id) : null;
+  document.getElementById('cust-name').value = c?c.name:'';
+  document.getElementById('cust-phone').value = c?c.phone:'';
+  document.getElementById('cust-tax').value = c?c.taxCode:'';
+  document.getElementById('cust-address').value = c?c.address:'';
+  document.getElementById('cust-note').value = c?c.note:'';
+  
+  const m = document.getElementById('customer-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+}
+
+async function saveCustomer(){
+  const name=document.getElementById('cust-name').value.trim();
+  if(!name){ showToast('Vui lòng nhập tên khách hàng'); return; }
+  const id=document.getElementById('cust-id').value;
+  const data={name,phone:document.getElementById('cust-phone').value.trim(),taxCode:document.getElementById('cust-tax').value.trim(),address:document.getElementById('cust-address').value.trim(),note:document.getElementById('cust-note').value.trim()};
+  if(id){ Object.assign(customers.find(c=>c.id===id),data); } else { customers.push({id:uid(),...data}); }
+  await saveCustomers();
+  closeModal('customer-modal'); showToast('Đã lưu khách hàng');
+}
+
+async function deleteCustomer(id){
+  if(customerInvoices(id).length){ showToast('Khách hàng đã có hóa đơn, không thể xóa'); return; }
+  if(!confirm('Xóa khách hàng này?')) return;
+  customers = customers.filter(c=>c.id!==id);
+  await saveCustomers();
+}
+
+function fillCustomerSelects(){
+  const opts = '<option value="">— Chọn khách hàng —</option>' + customers.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  ['inv-customer','pay-customer'].forEach(id=>{
+    const sel=document.getElementById(id); const cur=sel.value;
+    sel.innerHTML=opts; if(cur) sel.value=cur;
+  });
+}
+
+function renderInvoices(){
+  const q=(document.getElementById('inv-search')?.value||'').toLowerCase();
+  const f=document.getElementById('inv-filter')?.value||'';
+  let list=[...invoices].sort((a,b)=>b.date.localeCompare(a.date));
+  list = list.filter(i=> (!q || (i.number+custName(i.customerId)).toLowerCase().includes(q)) && (!f || invStatus(i)===f) );
+  const el=document.getElementById('invoices-table');
+  if(!list.length){ el.innerHTML='<div class="p-8 text-center text-[#8B8E87] text-[13.5px]">Không có hóa đơn nào.</div>'; return; }
+  const statusLabel={paid:'Đã thanh toán',partial:'1 phần',unpaid:'Chưa thanh toán'};
+  const statusClass={paid:'bg-[#DDEEE0] text-[#3F7D4F]', partial:'bg-[#F4E6CB] text-[#A8751E]', unpaid:'bg-[#F6DCD8] text-[#B23A2E]'};
+  
+  el.innerHTML = `
+  <table class="w-full border-collapse text-[13.5px]">
+    <thead>
+      <tr class="bg-steel-50 border-b border-steel-100 text-left text-xs font-semibold uppercase tracking-wider text-[#5B5E59]">
+        <th class="p-2.5 px-3.5">Số HĐ</th><th class="p-2.5 px-3.5">Khách hàng</th><th class="p-2.5 px-3.5">Ngày</th><th class="p-2.5 px-3.5 text-right font-mono">Thành tiền</th><th class="p-2.5 px-3.5">Trạng thái</th><th class="p-2.5 px-3.5"></th>
+      </tr>
+    </thead>
+    <tbody>
+    ${list.map(i=>{
+      const st=invStatus(i);
+      return `<tr class="border-b border-steel-100 last:border-none hover:bg-steel-50/40">
+        <td class="p-2.5 px-3.5">${i.number||'—'}</td>
+        <td class="p-2.5 px-3.5">${custName(i.customerId)}</td>
+        <td class="p-2.5 px-3.5">${i.date}</td>
+        <td class="p-2.5 px-3.5 text-right font-mono">${fmt(invoiceTotal(i))}</td>
+        <td class="p-2.5 px-3.5"><span class="inline-block text-[11px] font-semibold p-0.5 px-2.5 rounded-full ${statusClass[st]}">${statusLabel[st]}</span></td>
+        <td class="p-2.5 px-3.5 text-right whitespace-nowrap space-x-1">
+          <button class="bg-transparent hover:bg-steel-50 text-[#23262A] font-medium p-1 px-2 border border-steel-300 rounded text-xs transition-colors" onclick="openInvoiceModal('${i.id}')">Sửa</button> 
+          <button class="bg-transparent hover:bg-red-100 text-red-600 font-medium p-1 px-2 border border-red-100 rounded text-xs transition-colors" onclick="deleteInvoice('${i.id}')">Xóa</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+function addLine(item){
+  lineSeq++;
+  const id='l'+lineSeq;
+  const div=document.createElement('div');
+  div.className='grid grid-cols-[1fr_60px_70px_85px_24px] sm:grid-cols-[1fr_70px_100px_110px_28px] gap-2 items-center'; 
+  div.id=id;
+  div.innerHTML = `
+    <input placeholder="VD: Xi măng" class="li-name w-full text-[13.5px] p-1.5 px-2 border border-steel-300 rounded-md focus:outline-none focus:ring-1 focus:ring-steel-500" value="${item?item.name:''}">
+    <input placeholder="bao" class="li-unit w-full text-[13.5px] p-1.5 px-2 border border-steel-300 rounded-md focus:outline-none focus:ring-1 focus:ring-steel-500" value="${item?item.unit:''}">
+    <input type="number" placeholder="0" class="li-qty w-full text-[13.5px] p-1.5 px-2 border border-steel-300 rounded-md focus:outline-none focus:ring-1 focus:ring-steel-500" value="${item?item.qty:1}" oninput="updateInvoiceTotal()">
+    <input type="number" placeholder="0" class="li-price w-full text-[13.5px] p-1.5 px-2 border border-steel-300 rounded-md focus:outline-none focus:ring-1 focus:ring-steel-500" value="${item?item.price:''}" oninput="updateInvoiceTotal()">
+    <button class="text-red-600 text-lg line-none hover:text-red-800 text-center" onclick="document.getElementById('${id}').remove(); updateInvoiceTotal();">✕</button>`;
+  document.getElementById('inv-lines').appendChild(div);
+  updateInvoiceTotal();
+}
+
+function updateInvoiceTotal(){
+  let total=0;
+  document.querySelectorAll('#inv-lines .grid-cols-\\[1fr_60px_70px_85px_24px\\]').forEach(r=>{
+    const qty=Number(r.querySelector('.li-qty').value)||0;
+    const price=Number(r.querySelector('.li-price').value)||0;
+    total+=qty*price;
+  });
+  document.getElementById('inv-total-display').textContent = fmt(total);
+}
+
+function openInvoiceModal(id){
+  document.getElementById('invoice-modal-title').textContent = id? 'Sửa hóa đơn':'Lập hóa đơn';
+  document.getElementById('inv-id').value = id||'';
+  document.getElementById('inv-lines').innerHTML='';
+  fillCustomerSelects();
+  const inv = id ? invoices.find(i=>i.id===id) : null;
+  document.getElementById('inv-number').value = inv? inv.number : 'HD-'+(invoices.length+1).toString().padStart(4,'0');
+  document.getElementById('inv-customer').value = inv? inv.customerId : '';
+  document.getElementById('inv-date').value = inv? inv.date : todayStr();
+  document.getElementById('inv-note').value = inv? inv.note : '';
+  if(inv && inv.items.length){ inv.items.forEach(it=>addLine(it)); } else { addLine(); }
+  updateInvoiceTotal();
+  
+  const m = document.getElementById('invoice-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+}
+
+async function saveInvoice(){
+  const customerId=document.getElementById('inv-customer').value;
+  const date=document.getElementById('inv-date').value;
+  if(!customerId){ showToast('Vui lòng chọn khách hàng'); return; }
+  if(!date){ showToast('Vui lòng chọn ngày'); return; }
+  const items=[...document.querySelectorAll('#inv-lines .grid-cols-\\[1fr_60px_70px_85px_24px\\]')].map(r=>({
+    name:r.querySelector('.li-name').value.trim(),
+    unit:r.querySelector('.li-unit').value.trim(),
+    qty:Number(r.querySelector('.li-qty').value)||0,
+    price:Number(r.querySelector('.li-price').value)||0
+  })).filter(it=>it.name);
+  if(!items.length){ showToast('Vui lòng nhập ít nhất 1 mặt hàng'); return; }
+  const id=document.getElementById('inv-id').value;
+  const data={number:document.getElementById('inv-number').value.trim(),customerId,date,items,note:document.getElementById('inv-note').value.trim()};
+  if(id){ Object.assign(invoices.find(i=>i.id===id),data); } else { invoices.push({id:uid(),...data}); }
+  await saveInvoices();
+  closeModal('invoice-modal'); showToast('Đã lưu hóa đơn');
+}
+
+async function deleteInvoice(id){
+  if(!confirm('Xóa hóa đơn này?')) return;
+  invoices = invoices.filter(i=>i.id!==id);
+  payments = payments.filter(p=>p.invoiceId!==id);
+  await saveInvoices(); await savePayments();
+}
+
+function renderDebt(){
+  const totalDebt = customers.reduce((s,c)=>s+Math.max(customerDebt(c.id),0),0);
+  const overCount = customers.filter(c=>customerDebt(c.id)>0).length;
+  document.getElementById('debt-metrics').innerHTML = `
+    <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl p-4 px-4.5 shadow-sm">
+      <div class="text-[11px] text-[#5B5E59] uppercase tracking-wider font-semibold">Tổng công nợ phải thu</div>
+      <div class="font-barlow text-2xl font-bold mt-1.5 leading-none text-brick-600">${fmt(totalDebt)}</div>
+    </div>
+    <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl p-4 px-4.5 shadow-sm">
+      <div class="text-[11px] text-[#5B5E59] uppercase tracking-wider font-semibold">Khách hàng còn nợ</div>
+      <div class="font-barlow text-3xl font-bold mt-1.5 leading-none">${overCount}</div>
+    </div>
+    <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl p-4 px-4.5 shadow-sm">
+      <div class="text-[11px] text-[#5B5E59] uppercase tracking-wider font-semibold">Đã thu (tổng)</div>
+      <div class="font-barlow text-2xl font-bold mt-1.5 leading-none text-green-600">${fmt(payments.reduce((s,p)=>s+Number(p.amount),0))}</div>
+    </div>`;
+
+  const rows = customers.map(c=>({c,billed:customerBilled(c.id),paid:customerPaid(c.id),debt:customerDebt(c.id)})).filter(r=>r.billed>0||r.paid>0).sort((a,b)=>b.debt-a.debt);
+  document.getElementById('debt-table').innerHTML = rows.length ? `
+  <table class="w-full border-collapse text-[13.5px]">
+    <thead>
+      <tr class="bg-steel-50 border-b border-steel-100 text-left text-xs font-semibold uppercase tracking-wider text-[#5B5E59]">
+        <th class="p-2.5 px-3.5">Khách hàng</th><th class="p-2.5 px-3.5 text-right font-mono">Tổng hóa đơn</th><th class="p-2.5 px-3.5 text-right font-mono">Đã thu</th><th class="p-2.5 px-3.5 text-right font-mono">Còn nợ</th>
+      </tr>
+    </thead>
+    <tbody>
+    ${rows.map(r=>`<tr class="border-b border-steel-100 last:border-none hover:bg-steel-50/40"><td class="p-2.5 px-3.5">${r.c.name}</td><td class="p-2.5 px-3.5 text-right font-mono">${fmt(r.billed)}</td><td class="p-2.5 px-3.5 text-right font-mono">${fmt(r.paid)}</td><td class="p-2.5 px-3.5 text-right font-mono font-semibold" style="color:${r.debt>0?'#A8451F':'#3F7D4F'}">${fmt(r.debt)}</td></tr>`).join('')}
+    </tbody></table>` : '<div class="p-8 text-center text-[#8B8E87] text-[13.5px]">Chưa có dữ liệu công nợ.</div>';
+
+  const plist=[...payments].sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('payments-table').innerHTML = plist.length ? `
+  <table class="w-full border-collapse text-[13.5px]">
+    <thead>
+      <tr class="bg-steel-50 border-b border-steel-100 text-left text-xs font-semibold uppercase tracking-wider text-[#5B5E59]">
+        <th class="p-2.5 px-3.5">Ngày</th><th class="p-2.5 px-3.5">Khách hàng</th><th class="p-2.5 px-3.5 text-right font-mono">Số tiền</th><th class="p-2.5 px-3.5">Ghi chú</th><th class="p-2.5 px-3.5"></th>
+      </tr>
+    </thead>
+    <tbody>
+    ${plist.map(p=>`<tr class="border-b border-steel-100 last:border-none hover:bg-steel-50/40"><td class="p-2.5 px-3.5">${p.date}</td><td class="p-2.5 px-3.5">${custName(p.customerId)}</td><td class="p-2.5 px-3.5 text-right font-mono">${fmt(p.amount)}</td><td class="p-2.5 px-3.5 text-[#8B8E87]">${p.note||'—'}</td><td class="p-2.5 px-3.5 text-right"><button class="bg-transparent hover:bg-red-100 text-red-600 font-medium p-1 px-2 border border-red-100 rounded text-xs transition-colors" onclick="deletePayment('${p.id}')">Xóa</button></td></tr>`).join('')}
+    </tbody></table>` : '<div class="p-8 text-center text-[#8B8E87] text-[13.5px]">Chưa có thanh toán nào.</div>';
+}
+
+function updatePayDebtHint(){
+  const id=document.getElementById('pay-customer').value;
+  const hint=document.getElementById('pay-debt-hint');
+  if(!id){ hint.textContent=''; return; }
+  hint.textContent = 'Công nợ hiện tại: ' + fmt(customerDebt(id));
+}
+
+function openPaymentModal(custId){
+  fillCustomerSelects();
+  document.getElementById('pay-customer').value = custId||'';
+  document.getElementById('pay-amount').value = '';
+  document.getElementById('pay-date').value = todayStr();
+  document.getElementById('pay-note').value = '';
+  updatePayDebtHint();
+  
+  const m = document.getElementById('payment-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+}
+
+async function savePayment(){
+  const customerId=document.getElementById('pay-customer').value;
+  const amount=Number(document.getElementById('pay-amount').value)||0;
+  const date=document.getElementById('pay-date').value;
+  if(!customerId){ showToast('Vui lòng chọn khách hàng'); return; }
+  if(amount<=0){ showToast('Vui lòng nhập số tiền hợp lệ'); return; }
+  if(!date){ showToast('Vui lòng chọn ngày'); return; }
+  payments.push({id:uid(),customerId,amount,date,note:document.getElementById('pay-note').value.trim()});
+  await savePayments();
+  closeModal('payment-modal'); showToast('Đã ghi nhận thanh toán');
+}
+
+async function deletePayment(id){
+  if(!confirm('Xóa lượt thanh toán này?')) return;
+  payments = payments.filter(p=>p.id!==id);
+  await savePayments();
+}
+
+function renderReports(){
+  const totalBilled = invoices.reduce((s,i)=>s+invoiceTotal(i),0);
+  const totalPaid = payments.reduce((s,p)=>s+Number(p.amount),0);
+  const totalDebt = totalBilled-totalPaid;
+  document.getElementById('report-metrics').innerHTML = `
+    <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl p-4 px-4.5 shadow-sm">
+      <div class="text-[11px] text-[#5B5E59] uppercase tracking-wider font-semibold">Tổng doanh thu lịch sử</div>
+      <div class="font-barlow text-2xl font-bold mt-1.5 leading-none text-green-600">${fmt(totalBilled)}</div>
+    </div>
+    <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl p-4 px-4.5 shadow-sm">
+      <div class="text-[11px] text-[#5B5E59] uppercase tracking-wider font-semibold">Đã thu hồi</div>
+      <div class="font-barlow text-2xl font-bold mt-1.5 leading-none text-green-600">${fmt(totalPaid)}</div>
+    </div>
+    <div class="bg-[#FCFBF8] border border-steel-100 rounded-xl p-4 px-4.5 shadow-sm">
+      <div class="text-[11px] text-[#5B5E59] uppercase tracking-wider font-semibold">Nợ cần thu hồi</div>
+      <div class="font-barlow text-2xl font-bold mt-1.5 leading-none text-brick-600">${fmt(totalDebt)}</div>
+    </div>`;
+
+  const revs = customers.map(c=>({name:c.name, val:customerBilled(c.id)})).filter(x=>x.val>0).sort((a,b)=>b.val-a.val).slice(0,8);
+  const maxRev = Math.max(...revs.map(r=>r.val),1);
+  document.getElementById('report-revenue-bars').innerHTML = revs.length ? revs.map(r=>`
+    <div class="flex items-center gap-2.5 mb-2.5 last:mb-0">
+      <div class="w-[140px] text-[12.5px] flex-shrink-0 truncate">${r.name}</div>
+      <div class="flex-1 h-2.5 bg-steel-100 rounded-full overflow-hidden">
+        <div class="h-full bg-brick-500 rounded-full" style="width:${(r.val/maxRev*100).toFixed(0)}%"></div>
+      </div>
+      <div class="w-[110px] text-right font-mono text-xs flex-shrink-0">${fmt(r.val)}</div>
+    </div>`).join('') : '<div class="p-8 text-center text-[#8B8E87] text-[13.5px]">Chưa có doanh thu.</div>';
+
+  const rows = customers.map(c=>({name:c.name, billed:customerBilled(c.id), paid:customerPaid(c.id), debt:customerDebt(c.id)})).filter(r=>r.billed>0||r.paid>0).sort((a,b)=>b.debt-a.debt);
+  document.getElementById('report-reconcile').innerHTML = rows.length ? rows.map(r=>`
+    <tr class="border-b border-steel-100 last:border-none hover:bg-steel-50/40"><td class="p-2.5 px-3.5">${r.name}</td><td class="p-2.5 px-3.5 text-right font-mono">${fmt(r.billed)}</td><td class="p-2.5 px-3.5 text-right font-mono">${fmt(r.paid)}</td><td class="p-2.5 px-3.5 text-right font-mono font-semibold" style="color:${r.debt>0?'#A8451F':'#3F7D4F'}">${fmt(r.debt)}</td></tr>`).join('') : '<tr><td colspan="4" class="p-8 text-center text-[#8B8E87] text-[13.5px]">Chưa có dữ liệu đối chiếu.</td></tr>';
+}
+
+function exportCSV(){
+  let csv = 'Khách hàng,Tổng hóa đơn,Đã thu,Còn nợ\r\n';
+  customers.forEach(c=>{
+    const b=customerBilled(c.id), p=customerPaid(c.id), d=customerDebt(c.id);
+    if(b>0||p>0) csv += `"${c.name.replace(/"/g,'""')}",${b},${p},${d}\r\n`;
+  });
+  const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], {type:'text/csv;charset=utf-8;'});
+  const link = document.createElement('a'); link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', `Báo_cáo_công_nợ_${todayStr()}.csv`);
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+}
+
+function closeModal(id){ 
+  const m = document.getElementById(id);
+  m.classList.remove('flex'); m.classList.add('hidden');
+}
+
+window.addEventListener('DOMContentLoaded', loadAll);
+</script>
+</body>
+</html>
